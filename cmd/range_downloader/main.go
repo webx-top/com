@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/webx-top/webx/lib/com"
+	"github.com/webx-top/com"
 
 	"flag"
 	"log"
