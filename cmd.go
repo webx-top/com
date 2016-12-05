@@ -159,27 +159,27 @@ func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
 	return
 }
 
-func RunCmdStr(command string, recvResult func([]byte) error) {
+func RunCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
-	RunCmdStrWithWriter(command, out)
+	return RunCmdStrWithWriter(command, out)
 }
 
-func RunCmd(params []string, recvResult func([]byte) error) {
+func RunCmd(params []string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
-	RunCmdWithWriter(params, out)
+	return RunCmdWithWriter(params, out)
 }
 
-func RunCmdStrWithWriter(command string, writer ...io.Writer) {
+func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
 	params := ParseArgs(command)
-	RunCmdWithWriter(params, writer...)
+	return RunCmdWithWriter(params, writer...)
 }
 
-func RunCmdWithWriter(params []string, writer ...io.Writer) {
+func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
+	var cmd *exec.Cmd
 	length := len(params)
 	if length == 0 || len(params[0]) == 0 {
-		return
+		return cmd
 	}
-	var cmd *exec.Cmd
 	if length > 1 {
 		cmd = exec.Command(params[0], params[1:]...)
 	} else {
@@ -207,4 +207,6 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) {
 			wErr.Write([]byte(err.Error()))
 		}
 	}()
+
+	return cmd
 }
