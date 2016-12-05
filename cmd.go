@@ -27,6 +27,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/lunny/log"
 )
 
 //内存占用
@@ -209,4 +211,31 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	}()
 
 	return cmd
+}
+
+func CloseProcessFromPidFile(pidFile string) (err error) {
+	if pidFile == `` {
+		return
+	}
+	b, err := ioutil.ReadFile(pidFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return
+	}
+	pid, err := strconv.Atoi(strings.TrimSpace(string(b)))
+	if err != nil {
+		log.Error(err.Error())
+		return nil
+	}
+	return CloseProcessFromPid(pid)
+}
+
+func CloseProcessFromPid(pid int) (err error) {
+	procs, err := os.FindProcess(pid)
+	if err == nil {
+		return procs.Kill()
+	}
+	return
 }
