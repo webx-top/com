@@ -15,23 +15,27 @@
 package com
 
 import (
+	"regexp"
 	"strconv"
-	"strings"
+)
+
+var (
+	regexpNotNumber = regexp.MustCompile(`[^0-9]+`)
 )
 
 const (
-    VersionCompareGt =-1
-    VersionCompareEq = 0
-    VersionCompareLt = 1
+	VersionCompareGt = 1
+	VersionCompareEq = 0
+	VersionCompareLt = -1
 )
 
 // VersionCompare compare two versions in x.y.z form
 // @param  {string} a     version string
 // @param  {string} b     version string
-// @return {int}          -1 = a is higher, 0 = equal, 1 = b is higher
+// @return {int}          1 = a is higher, 0 = equal, -1 = b is higher
 func VersionCompare(a, b string) (ret int) {
-	as := strings.Split(a, ".")
-	bs := strings.Split(b, ".")
+	as := regexpNotNumber.Split(a, -1)
+	bs := regexpNotNumber.Split(b, -1)
 	al := len(as)
 	bl := len(bs)
 	loopMax := bl
@@ -55,9 +59,9 @@ func VersionCompare(a, b string) (ret int) {
 		yi, _ := strconv.Atoi(y)
 
 		if xi > yi {
-			ret = -1
+			ret = VersionCompareGt
 		} else if xi < yi {
-			ret = 1
+			ret = VersionCompareLt
 		}
 
 		if ret != 0 {
