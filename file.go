@@ -533,15 +533,16 @@ func GrepFile(patten string, filename string) (lines []string, err error) {
 	}
 
 	lines = make([]string, 0)
-	err = SeekFileLines(filename, func(line string) {
+	err = SeekFileLines(filename, func(line string) error {
 		if re.MatchString(line) {
 			lines = append(lines, line)
 		}
+		return nil
 	})
 	return lines, err
 }
 
-func SeekFileLines(filename string, callback func(string)) (err error) {
+func SeekFileLines(filename string, callback func(string) error) (err error) {
 	fd, err := os.Open(filename)
 	if err != nil {
 		return
@@ -559,7 +560,9 @@ func SeekFileLines(filename string, callback func(string)) (err error) {
 			continue
 		}
 		line = prefix + line
-		callback(line)
+		if e := callback(line); e != nil {
+			return e
+		}
 		if er == io.EOF {
 			break
 		}
