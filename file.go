@@ -547,6 +547,7 @@ func SeekFileLines(filename string, callback func(string) error) (err error) {
 	if err != nil {
 		return
 	}
+	defer fd.Close()
 	reader := bufio.NewReader(fd)
 	prefix := ""
 	for {
