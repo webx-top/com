@@ -372,7 +372,7 @@ func LowerCaseFirst(name string) string {
 }
 
 func AddSlashes(s string, args ...rune) string {
-	b := []rune{'\\', '\''}
+	b := []rune{'\''}
 	if len(args) > 0 {
 		b = append(b, args...)
 	}
@@ -381,25 +381,19 @@ func AddSlashes(s string, args ...rune) string {
 
 func AddCSlashes(s string, b ...rune) string {
 	r := []rune{}
-	var exists bool
-	for _, f := range b {
-		if '\\' == f {
-			exists = true
-			break
-		}
-	}
 	for _, v := range []rune(s) {
-		for _, f := range b {
-			if v == f {
-				r = append(r, '\\')
-				break
+		if v == '\\' {
+			r = append(r, '\\')
+		} else {
+			for _, f := range b {
+				if v == f {
+					r = append(r, '\\')
+					break
+				}
 			}
 		}
 		r = append(r, v)
 	}
 	s = string(r)
-	if exists {
-		return s
-	}
-	return strings.TrimRight(s, `\`)
+	return s
 }
