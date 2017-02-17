@@ -19,7 +19,7 @@ import (
 	"strconv"
 )
 
-// Convert string to specify type.
+// StrTo Convert string to specify type.
 type StrTo string
 
 func (f StrTo) Exist() bool {
@@ -63,7 +63,7 @@ func (f StrTo) String() string {
 	return ""
 }
 
-// Convert any type to string.
+// ToStr Convert any type to string.
 func ToStr(value interface{}, args ...int) (s string) {
 	switch v := value.(type) {
 	case bool:
