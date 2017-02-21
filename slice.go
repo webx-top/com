@@ -240,5 +240,8 @@ func SliceRemove(slice []interface{}, start int, args ...int) []interface{} {
 	} else {
 		end = args[0]
 	}
+	if end > len(slice)-1 {
+		return slice[:start]
+	}
 	return append(slice[:start], slice[end:]...)
 }
