@@ -28,12 +28,12 @@ func Hash(str string) string {
 	return Sha256(str)
 }
 
-// Salt 盐值加密
+// Salt 盐值加密(生成64个字符)
 func Salt() string {
 	return Hash(RandStr(64))
 }
 
-// MakePassword 创建密码
+// MakePassword 创建密码(生成64个字符)
 func MakePassword(password string, salt string, positions ...uint) string {
 	length := len(positions)
 	if length < 1 {
