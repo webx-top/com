@@ -31,17 +31,10 @@ import (
 type MonitorEvent struct {
 	//文件事件
 	Create func(string) //创建
-	Delete func(string) //删除
+	Delete func(string) //删除（包含文件夹和文件。因为已经删除，无法确定是文件夹还是文件）
 	Modify func(string) //修改（包含修改权限）
 	Chmod  func(string) //修改权限（windows不支持）
 	Rename func(string) //重命名
-
-	//文件夹事件
-	DirCreate func(string) //创建
-	DirDelete func(string) //删除
-	DirModify func(string) //修改（包含修改权限）
-	DirChmod  func(string) //修改权限（windows不支持）
-	DirRename func(string) //重命名
 
 	//其它
 	Channel chan bool //管道
@@ -70,6 +63,14 @@ func (m *MonitorEvent) Watcher() *fsnotify.Watcher {
 	return m.watcher
 }
 
+func (m *MonitorEvent) IsDir(path string) bool {
+	d, e := os.Stat(path)
+	if e != nil {
+		return false
+	}
+	return d.IsDir()
+}
+
 //Monitor 文件监测
 func Monitor(rootDir string, callback *MonitorEvent, args ...func(string) bool) error {
 	var filter func(string) bool
@@ -91,59 +92,37 @@ func Monitor(rootDir string, callback *MonitorEvent, args ...func(string) bool) 
 		for {
 			select {
 			case ev := <-watcher.Events:
+				if callback.Debug {
+					log.Println(`[Monitor]`, `Trigger Event:`, ev)
+				}
 				if filter != nil {
 					if !filter(ev.Name) {
 						break
 					}
 				}
-				d, err := os.Stat(ev.Name)
-				if err != nil {
-					break
-				}
-				if callback.Debug {
-					log.Println(`[Monitor]`, `Trigger Event:`, ev)
-				}
 				callback.lock.Do(func() {
 					switch ev.Op {
 					case fsnotify.Create:
-						if d.IsDir() {
+						if callback.IsDir(ev.Name) {
 							watcher.Add(ev.Name)
-							if callback.DirCreate != nil {
-								callback.DirCreate(ev.Name)
-							}
-						} else if callback.Create != nil {
+						}
+						if callback.Create != nil {
 							callback.Create(ev.Name)
 						}
 					case fsnotify.Remove:
-						if d.IsDir() {
-							if callback.DirDelete != nil {
-								callback.DirDelete(ev.Name)
-							}
-						} else if callback.Delete != nil {
+						if callback.Delete != nil {
 							callback.Delete(ev.Name)
 						}
 					case fsnotify.Write:
-						if d.IsDir() {
-							if callback.DirModify != nil {
-								callback.DirModify(ev.Name)
-							}
-						} else if callback.Modify != nil {
+						if callback.Modify != nil {
 							callback.Modify(ev.Name)
 						}
 					case fsnotify.Rename:
-						if d.IsDir() {
-							if callback.DirRename != nil {
-								callback.DirRename(ev.Name)
-							}
-						} else if callback.Rename != nil {
+						if callback.Rename != nil {
 							callback.Rename(ev.Name)
 						}
 					case fsnotify.Chmod:
-						if d.IsDir() {
-							if callback.DirChmod != nil {
-								callback.DirChmod(ev.Name)
-							}
-						} else if callback.Chmod != nil {
+						if callback.Chmod != nil {
 							callback.Chmod(ev.Name)
 						}
 					}
