@@ -32,7 +32,7 @@ type MonitorEvent struct {
 	//文件事件
 	Create func(string) //创建
 	Delete func(string) //删除（包含文件夹和文件。因为已经删除，无法确定是文件夹还是文件）
-	Modify func(string) //修改（包含修改权限）
+	Modify func(string) //修改（包含修改权限。如果是文件夹，则内部的文件被更改也会触发此事件）
 	Chmod  func(string) //修改权限（windows不支持）
 	Rename func(string) //重命名
 
