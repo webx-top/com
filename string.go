@@ -397,3 +397,20 @@ func AddCSlashes(s string, b ...rune) string {
 	s = string(r)
 	return s
 }
+
+func MaskString(v string, width ...float64) string {
+	var show float64 = 3
+	if len(width) > 0 {
+		show = width[0]
+	}
+	size := len(v)
+	showSize := int(float64(size) / 10 * show)
+	hideSize := size - showSize*2 + 1
+	rights := showSize + hideSize
+	if showSize > 0 && hideSize > 0 && rights < size && showSize < size {
+		v = v[0:showSize-1] + strings.Repeat(`*`, hideSize) + v[rights:]
+	} else {
+		v = strings.Repeat(`*`, size)
+	}
+	return v
+}
