@@ -398,6 +398,7 @@ func AddCSlashes(s string, b ...rune) string {
 	return s
 }
 
+// MaskString 0123456789 => 012****789
 func MaskString(v string, width ...float64) string {
 	var show float64 = 3
 	if len(width) > 0 {
