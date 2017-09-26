@@ -399,19 +399,30 @@ func AddCSlashes(s string, b ...rune) string {
 }
 
 // MaskString 0123456789 => 012****789
-func MaskString(v string, width ...float64) string {
-	var show float64 = 3
+func MaskString(v string, width ...uint) string {
+	size := len(v)
+	if size < 1 {
+		return ``
+	}
+	if size == 1 {
+		return `*`
+	}
+	var show uint = 3
 	if len(width) > 0 {
 		show = width[0]
 	}
-	size := len(v)
-	showSize := int(float64(size) / 10 * show)
+	showSize := int(float64(size) / 10 * float64(show))
 	hideSize := size - showSize*2 + 1
 	rights := showSize + hideSize
 	if showSize > 0 && hideSize > 0 && rights < size && showSize < size {
-		v = v[0:showSize-1] + strings.Repeat(`*`, hideSize) + v[rights:]
-	} else {
-		v = strings.Repeat(`*`, size)
+		return v[0:showSize-1] + strings.Repeat(`*`, hideSize) + v[rights:]
 	}
-	return v
+	if show < 5 {
+		showSize = size / 2
+		hideSize = size - showSize + 1
+		if showSize > 0 && hideSize > 0 && showSize < size {
+			return v[0:showSize-1] + strings.Repeat(`*`, hideSize)
+		}
+	}
+	return v[0:1] + strings.Repeat(`*`, size-1)
 }
