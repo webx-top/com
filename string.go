@@ -415,19 +415,19 @@ func MaskString(v string, width ...float64) string {
 	if showSize < 1 {
 		showSize = 1
 	}
-	hideSize := size - showSize*2 + 1
+	hideSize := size - showSize*2
 	rights := showSize + hideSize
-	if showSize > 0 && hideSize > 0 && rights < size && showSize < size {
-		return v[0:showSize-1] + strings.Repeat(`*`, hideSize) + v[rights:]
+	if rights > 0 && hideSize > 0 && rights < size && showSize < size {
+		return v[0:showSize] + strings.Repeat(`*`, hideSize) + v[rights:]
 	}
 	if show < 0.5 {
 		showSize = int(float64(size) * 0.5)
 		if showSize < 1 {
 			showSize = 1
 		}
-		hideSize = size - showSize + 1
-		if showSize > 0 && hideSize > 0 && showSize < size {
-			return v[0:showSize-1] + strings.Repeat(`*`, hideSize)
+		hideSize = size - showSize
+		if hideSize > 0 && showSize < size {
+			return v[0:showSize] + strings.Repeat(`*`, hideSize)
 		}
 	}
 	return v[0:1] + strings.Repeat(`*`, size-1)
