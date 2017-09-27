@@ -21,10 +21,10 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"hash"
 	"io"
 	r "math/rand"
@@ -38,7 +38,7 @@ import (
 func Md5(str string) string {
 	m := md5.New()
 	io.WriteString(m, str)
-	return fmt.Sprintf("%x", m.Sum(nil))
+	return hex.EncodeToString(m.Sum(nil))
 }
 
 func ByteMd5(b []byte) string {
@@ -53,7 +53,16 @@ func Token(key string, val []byte, args ...string) string {
 	for _, v := range args {
 		hm.Write([]byte(v))
 	}
-	return fmt.Sprintf("%02x", hm.Sum(nil))
+	return base64.URLEncoding.EncodeToString(hm.Sum(nil))
+}
+
+func Token256(key string, val []byte, args ...string) string {
+	hm := hmac.New(sha256.New, []byte(key))
+	hm.Write(val)
+	for _, v := range args {
+		hm.Write([]byte(v))
+	}
+	return base64.URLEncoding.EncodeToString(hm.Sum(nil))
 }
 
 func Encode(data interface{}) ([]byte, error) {
@@ -96,7 +105,7 @@ func JsonDecode(data []byte, to interface{}) error {
 
 func sha(m hash.Hash, str string) string {
 	io.WriteString(m, str)
-	return fmt.Sprintf("%x", m.Sum(nil))
+	return base64.URLEncoding.EncodeToString(m.Sum(nil))
 }
 
 // Sha1 sha1 hash string
