@@ -116,7 +116,7 @@ func JsonDecode(data []byte, to interface{}) error {
 
 func sha(m hash.Hash, str string) string {
 	io.WriteString(m, str)
-	return base64.URLEncoding.EncodeToString(m.Sum(nil))
+	return hex.EncodeToString(m.Sum(nil))
 }
 
 // Sha1 sha1 hash string
