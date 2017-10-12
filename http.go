@@ -275,7 +275,7 @@ func HTTPClientWithTimeout(timeout time.Duration) *http.Client {
 	client := &http.Client{
 		Transport: &http.Transport{
 			Dial: func(netw, addr string) (net.Conn, error) {
-				conn, err := net.DialTimeout(netw, addr, time.Second*2)
+				conn, err := net.DialTimeout(netw, addr, timeout)
 				if err != nil {
 					return nil, err
 				}
