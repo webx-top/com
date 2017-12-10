@@ -305,8 +305,8 @@ func getDurationUnits(args []interface{}) map[string]string {
 		case map[string]string:
 			units = v
 		case string:
-			switch v {
-			case `zh_CN`, `zh-CN`:
+			switch strings.ToLower(v) {
+			case `zh_cn`, `zh-cn`:
 				units = unitsZhCN
 			}
 		}
