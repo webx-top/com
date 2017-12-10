@@ -21,19 +21,19 @@ import (
 	"time"
 )
 
-// Format unix time int64 to string
+//Date Format unix time int64 to string
 func Date(ti int64, format string) string {
 	t := time.Unix(int64(ti), 0)
 	return DateT(t, format)
 }
 
-// Format unix time string to string
+//DateS Format unix time string to string
 func DateS(ts string, format string) string {
 	i, _ := strconv.ParseInt(ts, 10, 64)
 	return Date(i, format)
 }
 
-// Format time.Time struct to string
+//DateT Format time.Time struct to string
 // MM - month - 01
 // M - month - 1, single bit
 // DD - day - 02
@@ -100,18 +100,18 @@ var datePatterns = []string{
 }
 var DateFormatReplacer = strings.NewReplacer(datePatterns...)
 
-// Parse Date use PHP time format.
+//DateParse Parse Date use PHP time format.
 func DateParse(dateString, format string) (time.Time, error) {
 	return time.ParseInLocation(ConvDateFormat(format), dateString, time.Local)
 }
 
-// Convert PHP time format.
+//ConvDateFormat Convert PHP time format.
 func ConvDateFormat(format string) string {
 	format = DateFormatReplacer.Replace(format)
 	return format
 }
 
-//将时间戳格式化为日期字符窜
+//DateFormat 将时间戳格式化为日期字符窜
 func DateFormat(format string, timestamp interface{}) (t string) { // timestamp
 	switch format {
 	case "Y-m-d H:i:s", "":
@@ -136,7 +136,7 @@ func DateFormat(format string, timestamp interface{}) (t string) { // timestamp
 	return
 }
 
-//日期字符窜转为时间戳数字
+//StrToTime 日期字符窜转为时间戳数字
 func StrToTime(str string, args ...string) (unixtime int) {
 	layout := "2006-01-02 15:04:05"
 	if len(args) > 0 {
@@ -151,54 +151,54 @@ func StrToTime(str string, args ...string) (unixtime int) {
 	return
 }
 
-//格式化字节。 FormatByte(字节整数，保留小数位数)
+//FormatByte 格式化字节。 FormatByte(字节整数，保留小数位数)
 func FormatByte(args ...interface{}) string {
 	sizes := [...]string{"YB", "ZB", "EB", "PB", "TB", "GB", "MB", "KB", "B"}
 	var (
-		total     int     = len(sizes)
-		size      float64 = 0
-		precision int     = 0
+		total     = len(sizes)
+		size      float64
+		precision int
 	)
 	ln := len(args)
 	if ln > 0 {
-		switch args[0].(type) {
+		switch v := args[0].(type) {
 		case float64:
-			size = args[0].(float64)
+			size = v
 		case float32:
-			size = float64(args[0].(float32))
+			size = float64(v)
 		case int64:
-			size = float64(args[0].(int64))
+			size = float64(v)
 		case int32:
-			size = float64(args[0].(int32))
+			size = float64(v)
 		case int:
-			size = float64(args[0].(int))
+			size = float64(v)
 		case uint64:
-			size = float64(args[0].(uint64))
+			size = float64(v)
 		case uint32:
-			size = float64(args[0].(uint32))
+			size = float64(v)
 		case uint:
-			size = float64(args[0].(uint))
+			size = float64(v)
 		case string:
-			i, _ := strconv.Atoi(args[0].(string))
+			i, _ := strconv.Atoi(v)
 			size = float64(i)
 		default:
 			fmt.Printf("FormatByte error: first param (%#v) invalid.\n", args[0])
 		}
 	}
 	if ln > 1 {
-		switch args[1].(type) {
+		switch v := args[1].(type) {
 		case int:
-			precision = args[1].(int)
+			precision = v
 		case int64:
-			precision = int(args[1].(int64))
+			precision = int(v)
 		case int32:
-			precision = int(args[1].(int32))
+			precision = int(v)
 		case uint:
-			precision = int(args[1].(uint))
+			precision = int(v)
 		case uint64:
-			precision = int(args[1].(uint64))
+			precision = int(v)
 		case uint32:
-			precision = int(args[1].(uint32))
+			precision = int(v)
 		default:
 			fmt.Printf("FormatByte error: second param (%#v) invalid.\n", args[1])
 		}
@@ -209,7 +209,7 @@ func FormatByte(args ...interface{}) string {
 	return fmt.Sprintf("%.*f%s", precision, size, sizes[total])
 }
 
-//格式化耗时
+//DateFormatShort 格式化耗时
 func DateFormatShort(timestamp interface{}) string {
 	now := time.Now()
 	year := now.Year()
@@ -227,7 +227,7 @@ func DateFormatShort(timestamp interface{}) string {
 	return DateFormat("06-01-02", timestamp)
 }
 
-//格式化耗时
+//FormatPastTime 格式化耗时
 func FormatPastTime(timestamp interface{}, args ...string) string {
 	duration := time.Now().Sub(time.Unix(Int64(timestamp), 0))
 	if u := uint64(duration); u >= uint64(time.Hour)*24 {
@@ -240,18 +240,12 @@ func FormatPastTime(timestamp interface{}, args ...string) string {
 	return FriendlyTime(duration)
 }
 
-//对人类友好的经历时间格式
+//FriendlyTime 对人类友好的经历时间格式
 func FriendlyTime(d time.Duration, args ...string) (r string) {
-	format := `Y-m-d H:i:s`
-	shortt := ``
+	var suffix string
 	switch len(args) {
-	case 2:
-		shortt = args[1]
-		fallthrough
 	case 1:
-		if args[0] != `` {
-			format = args[0]
-		}
+		suffix = args[0]
 	}
 	u := uint64(d)
 	if u < uint64(time.Second) {
@@ -265,25 +259,28 @@ func FriendlyTime(d time.Duration, args ...string) (r string) {
 		default:
 			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000, `ms`) //毫秒
 		}
-		r += shortt
 	} else {
 		switch {
 		case u < uint64(time.Minute):
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000, `s`) + shortt //秒
+			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000, `s`) //秒
 		case u < uint64(time.Hour):
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60, `m`) + shortt //分钟
+			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60, `m`) //分钟
 		case u < uint64(time.Hour)*24:
-			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60/60, `h`) + shortt //小时
+			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60/60, `h`) //小时
+		case u < uint64(time.Hour)*24*7:
+			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60/60/24, `d`) //天
 		default:
-			r = DateFormat(format, u)
+			r = fmt.Sprintf("%.2f%s", float64(u)/1000/1000/1000/60/60/24/7, `w`) //周
 		}
 	}
+	r += suffix
 	return
 }
 
-var StartTime time.Time = time.Now()
+//StartTime 开始时间
+var StartTime = time.Now()
 
-//总运行时长
+//TotalRunTime 总运行时长
 func TotalRunTime() string {
 	return FriendlyTime(time.Now().Sub(StartTime))
 }
