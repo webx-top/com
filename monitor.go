@@ -129,7 +129,9 @@ func Monitor(rootDir string, callback *MonitorEvent, args ...func(string) bool) 
 					callback.lock = &sync.Once{}
 				})
 			case err := <-watcher.Errors:
-				log.Println("Watcher error:", err)
+				if err != nil {
+					log.Println("Watcher error:", err)
+				}
 			}
 		}
 	}()
