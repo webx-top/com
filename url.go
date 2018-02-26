@@ -18,6 +18,7 @@ import (
 	"encoding/base64"
 	"math"
 	"net/url"
+	"strings"
 )
 
 // UrlEncode url encode string, is + not %20
@@ -39,6 +40,26 @@ func Base64Encode(str string) string {
 func Base64Decode(str string) (string, error) {
 	s, e := base64.StdEncoding.DecodeString(str)
 	return string(s), e
+}
+
+// SafeBase64Encode base64 encode
+func SafeBase64Encode(str string) string {
+	str = Base64Encode(str)
+	for strings.HasSuffix(str, `=`) {
+		str = strings.TrimSuffix(str, `=`) + `_`
+	}
+	str = strings.Replace(str, `/`, `-`, -1)
+	return str
+}
+
+// SafeBase64Decode base64 decode
+func SafeBase64Decode(str string) (string, error) {
+	str = strings.Replace(str, `-`, `/`, -1)
+	str = strings.Replace(str, ` `, `+`, -1)
+	for strings.HasSuffix(str, `_`) {
+		str = strings.TrimSuffix(str, `_`) + `=`
+	}
+	return Base64Decode(str)
 }
 
 // TotalPages 总页数
