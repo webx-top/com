@@ -2,3 +2,4 @@
 /.vscode
 testdata
 *.exe
+debug.test
