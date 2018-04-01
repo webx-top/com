@@ -34,4 +34,6 @@ func TestAbsURL(t *testing.T) {
 	fmt.Println(AbsURL(`https://www.coscms.com/system/download/index`, `../download2/index`))
 	fmt.Println(AbsURL(`https://www.coscms.com/system/download/index`, `../../system2/download2/index`))
 	fmt.Println(AbsURL(`https://www.coscms.com/system/download/index`, `/payment/index/index`))
+	fmt.Println(`SelfDir:`, SelfDir())
+	fmt.Println(`SelfPath:`, SelfPath())
 }

@@ -102,7 +102,7 @@ func GobDecode(data []byte, to interface{}) error {
 	return dec.Decode(to)
 }
 
-func JsonEncode(data interface{}) ([]byte, error) {
+func JSONEncode(data interface{}) ([]byte, error) {
 	val, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func JsonEncode(data interface{}) ([]byte, error) {
 	return val, nil
 }
 
-func JsonDecode(data []byte, to interface{}) error {
+func JSONDecode(data []byte, to interface{}) error {
 	return json.Unmarshal(data, to)
 }
 

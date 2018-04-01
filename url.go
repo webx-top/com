@@ -22,13 +22,13 @@ import (
 	"strings"
 )
 
-// UrlEncode url encode string, is + not %20
-func UrlEncode(str string) string {
+// URLEncode url encode string, is + not %20
+func URLEncode(str string) string {
 	return url.QueryEscape(str)
 }
 
-// UrlDecode url decode string
-func UrlDecode(str string) (string, error) {
+// URLDecode url decode string
+func URLDecode(str string) (string, error) {
 	return url.QueryUnescape(str)
 }
 

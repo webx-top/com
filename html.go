@@ -31,13 +31,13 @@ func HTML2JS(data []byte) []byte {
 	return []byte(s)
 }
 
-// HtmlEncode encode html chars to string
-func HtmlEncode(str string) string {
+// HTMLEncode encode html chars to string
+func HTMLEncode(str string) string {
 	return html.EscapeString(str)
 }
 
-// HtmlDecode decode string to html chars
-func HtmlDecode(str string) string {
+// HTMLDecode decode string to html chars
+func HTMLDecode(str string) string {
 	return html.UnescapeString(str)
 }
 
