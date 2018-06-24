@@ -258,7 +258,7 @@ func SliceRemove(slice []interface{}, start int, args ...int) []interface{} {
 // 		}else{
 //			a=a[0:i]
 //		}
-//		return 1,nil
+//		return nil
 // 	}
 //})
 func SliceRemoveCallback(length int, callback func(int) func(bool) error) error {
