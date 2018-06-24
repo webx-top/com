@@ -248,7 +248,7 @@ func SliceRemove(slice []interface{}, start int, args ...int) []interface{} {
 
 // SliceRemoveCallback : 根据条件删除
 // a=[]int{1,2,3,4,5,6}
-// SliceRemoveCallback(50, func(i int) func(bool)error{
+// SliceRemoveCallback(len(a), func(i int) func(bool)error{
 //	if a[i]!=4 {
 //	 	return nil
 // 	}
