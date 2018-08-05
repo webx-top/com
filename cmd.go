@@ -182,14 +182,7 @@ func (this CmdStartResultCapturer) Write(p []byte) (n int, err error) {
 	if time.Now().Sub(this.started) < this.duration {
 		this.buffer.Write(p)
 	}
-	return this.Write(p)
-}
-
-func (this CmdStartResultCapturer) WriteString(p string) (n int, err error) {
-	if time.Now().Sub(this.started) < this.duration {
-		this.buffer.WriteString(p)
-	}
-	return this.WriteString(p)
+	return this.Writer.Write(p)
 }
 
 func (this CmdStartResultCapturer) Buffer() *bytes.Buffer {
