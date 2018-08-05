@@ -162,6 +162,40 @@ func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
 	return
 }
 
+func NewCmdStartResultCapturer(writer io.Writer, duration time.Duration) *CmdStartResultCapturer {
+	return &CmdStartResultCapturer{
+		Writer:   writer,
+		duration: duration,
+		started:  time.Now(),
+		buffer:   bytes.NewBuffer(nil),
+	}
+}
+
+type CmdStartResultCapturer struct {
+	io.Writer
+	started  time.Time
+	duration time.Duration
+	buffer   *bytes.Buffer
+}
+
+func (this CmdStartResultCapturer) Write(p []byte) (n int, err error) {
+	if time.Now().Sub(this.started) < this.duration {
+		this.buffer.Write(p)
+	}
+	return this.Write(p)
+}
+
+func (this CmdStartResultCapturer) WriteString(p string) (n int, err error) {
+	if time.Now().Sub(this.started) < this.duration {
+		this.buffer.WriteString(p)
+	}
+	return this.WriteString(p)
+}
+
+func (this CmdStartResultCapturer) Buffer() *bytes.Buffer {
+	return this.buffer
+}
+
 func CreateCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
 	out := CmdResultCapturer{Do: recvResult}
 	return CreateCmdStrWithWriter(command, out)
@@ -231,7 +265,22 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	return cmd
 }
 
-func RunCmdWithWriterx(params []string, wait time.Duration, writer ...io.Writer) (cmd *exec.Cmd, err error) {
+func RunCmdWithWriterx(params []string, wait time.Duration, writer ...io.Writer) (cmd *exec.Cmd, err error, newOut *CmdStartResultCapturer, newErr *CmdStartResultCapturer) {
+	length := len(writer)
+	var wOut, wErr io.Writer = os.Stdout, os.Stderr
+	if length > 0 {
+		if writer[0] != nil {
+			wOut = writer[0]
+		}
+		if length > 1 {
+			if writer[1] != nil {
+				wErr = writer[1]
+			}
+		}
+	}
+	newOut = NewCmdStartResultCapturer(wOut, wait)
+	newErr = NewCmdStartResultCapturer(wErr, wait)
+	writer = []io.Writer{newOut, newErr}
 	cmd = CreateCmdWithWriter(params, writer...)
 	go func() {
 		err = cmd.Run()
