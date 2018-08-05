@@ -164,7 +164,7 @@ func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
 
 func NewCmdStartResultCapturer(writer io.Writer, duration time.Duration) *CmdStartResultCapturer {
 	return &CmdStartResultCapturer{
-		Writer:   writer,
+		writer:   writer,
 		duration: duration,
 		started:  time.Now(),
 		buffer:   bytes.NewBuffer(nil),
@@ -172,7 +172,7 @@ func NewCmdStartResultCapturer(writer io.Writer, duration time.Duration) *CmdSta
 }
 
 type CmdStartResultCapturer struct {
-	io.Writer
+	writer   io.Writer
 	started  time.Time
 	duration time.Duration
 	buffer   *bytes.Buffer
@@ -182,11 +182,15 @@ func (this CmdStartResultCapturer) Write(p []byte) (n int, err error) {
 	if time.Now().Sub(this.started) < this.duration {
 		this.buffer.Write(p)
 	}
-	return this.Writer.Write(p)
+	return this.writer.Write(p)
 }
 
 func (this CmdStartResultCapturer) Buffer() *bytes.Buffer {
 	return this.buffer
+}
+
+func (this CmdStartResultCapturer) Writer() io.Writer {
+	return this.writer
 }
 
 func CreateCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
