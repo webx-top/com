@@ -27,6 +27,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/admpub/log"
 )
@@ -228,6 +229,18 @@ func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	}()
 
 	return cmd
+}
+
+func RunCmdWithWriterx(params []string, wait time.Duration, writer ...io.Writer) (cmd *exec.Cmd, err error) {
+	cmd = CreateCmdWithWriter(params, writer...)
+	go func() {
+		err = cmd.Run()
+		if err != nil {
+			cmd.Stderr.Write([]byte(err.Error()))
+		}
+	}()
+	time.Sleep(wait)
+	return
 }
 
 func CloseProcessFromPidFile(pidFile string) (err error) {
