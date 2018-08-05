@@ -187,18 +187,15 @@ func CreateCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	} else {
 		cmd = exec.Command(params[0])
 	}
-	var wOut, wErr io.Writer
+	var wOut, wErr io.Writer = os.Stdout, os.Stderr
 	length = len(writer)
-	if length > 0 && writer[0] != nil {
-		wOut = writer[0]
-		if length > 1 {
-			wErr = writer[1]
-		} else {
-			wErr = wOut
+	if length > 0 {
+		if writer[0] != nil {
+			wOut = writer[0]
 		}
-	} else {
-		wOut = os.Stdout
-		wErr = os.Stderr
+		if length > 1 && writer[1] != nil {
+			wErr = writer[1]
+		}
 	}
 	cmd.Stdout = wOut
 	cmd.Stderr = wErr
