@@ -85,6 +85,7 @@ func WritePidFile(pidFile string) error {
 }
 
 var (
+	equal  = rune('=')
 	space  = rune(' ')
 	quote  = rune('"')
 	slash  = rune('\\')
@@ -100,7 +101,7 @@ func ParseArgs(command string) (params []string) {
 	//tower.exe -c tower.yaml -p "eee\"ddd" -t aaaa
 	for k, v := range command {
 		if !hasQuote {
-			if v == space {
+			if v == space || v == equal {
 				params = append(params, string(item))
 				item = []rune{}
 				continue
