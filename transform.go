@@ -21,11 +21,31 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 )
 
 func Int64(i interface{}) int64 {
+	if v, y := i.(int64); y {
+		return v
+	}
+	if v, y := i.(int32); y {
+		return int64(v)
+	}
+	if v, y := i.(uint32); y {
+		return int64(v)
+	}
+	if v, y := i.(int); y {
+		return int64(v)
+	}
+	if v, y := i.(uint); y {
+		return int64(v)
+	}
+	if v, y := i.(string); y {
+		v, _ := strconv.ParseInt(v, 10, 64)
+		return v
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return 0
 	}
 	out, err := strconv.ParseInt(in, 10, 64)
@@ -37,8 +57,15 @@ func Int64(i interface{}) int64 {
 }
 
 func Int(i interface{}) int {
+	if v, y := i.(int); y {
+		return v
+	}
+	if v, y := i.(string); y {
+		v, _ := strconv.Atoi(v)
+		return v
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return 0
 	}
 	out, err := strconv.Atoi(in)
@@ -50,8 +77,15 @@ func Int(i interface{}) int {
 }
 
 func Int32(i interface{}) int32 {
+	if v, y := i.(int32); y {
+		return v
+	}
+	if v, y := i.(string); y {
+		v, _ := strconv.ParseInt(v, 10, 32)
+		return int32(v)
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return 0
 	}
 	out, err := strconv.ParseInt(in, 10, 32)
@@ -63,8 +97,15 @@ func Int32(i interface{}) int32 {
 }
 
 func Uint64(i interface{}) uint64 {
+	if v, y := i.(uint64); y {
+		return v
+	}
+	if v, y := i.(string); y {
+		v, _ := strconv.ParseUint(v, 10, 64)
+		return v
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return 0
 	}
 	out, err := strconv.ParseUint(in, 10, 64)
@@ -76,8 +117,15 @@ func Uint64(i interface{}) uint64 {
 }
 
 func Uint(i interface{}) uint {
+	if v, y := i.(uint); y {
+		return v
+	}
+	if v, y := i.(string); y {
+		v, _ := strconv.ParseUint(v, 10, 32)
+		return uint(v)
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return 0
 	}
 	out, err := strconv.ParseUint(in, 10, 32)
@@ -89,8 +137,15 @@ func Uint(i interface{}) uint {
 }
 
 func Uint32(i interface{}) uint32 {
+	if v, y := i.(uint32); y {
+		return v
+	}
+	if v, y := i.(string); y {
+		v, _ := strconv.ParseUint(v, 10, 32)
+		return uint32(v)
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return 0
 	}
 	out, err := strconv.ParseUint(in, 10, 32)
@@ -102,8 +157,21 @@ func Uint32(i interface{}) uint32 {
 }
 
 func Float32(i interface{}) float32 {
+	if v, y := i.(float32); y {
+		return v
+	}
+	if v, y := i.(int32); y {
+		return float32(v)
+	}
+	if v, y := i.(uint32); y {
+		return float32(v)
+	}
+	if v, y := i.(string); y {
+		v, _ := strconv.ParseFloat(v, 32)
+		return float32(v)
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return 0
 	}
 	out, err := strconv.ParseFloat(in, 32)
@@ -115,8 +183,36 @@ func Float32(i interface{}) float32 {
 }
 
 func Float64(i interface{}) float64 {
+	if v, y := i.(float64); y {
+		return v
+	}
+	if v, y := i.(int64); y {
+		return float64(v)
+	}
+	if v, y := i.(uint64); y {
+		return float64(v)
+	}
+	if v, y := i.(float32); y {
+		return float64(v)
+	}
+	if v, y := i.(int32); y {
+		return float64(v)
+	}
+	if v, y := i.(uint32); y {
+		return float64(v)
+	}
+	if v, y := i.(int); y {
+		return float64(v)
+	}
+	if v, y := i.(uint); y {
+		return float64(v)
+	}
+	if v, y := i.(string); y {
+		v, _ := strconv.ParseFloat(v, 64)
+		return v
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return 0
 	}
 	out, err := strconv.ParseFloat(in, 64)
@@ -128,8 +224,11 @@ func Float64(i interface{}) float64 {
 }
 
 func Bool(i interface{}) bool {
+	if v, y := i.(bool); y {
+		return v
+	}
 	in := Str(i)
-	if in == "" {
+	if len(in) == 0 {
 		return false
 	}
 	out, err := strconv.ParseBool(in)
@@ -141,9 +240,52 @@ func Bool(i interface{}) bool {
 }
 
 func Str(v interface{}) string {
+	if v, y := v.(string); y {
+		return v
+	}
 	return fmt.Sprintf("%v", v)
 }
 
 func String(v interface{}) string {
 	return Str(v)
+}
+
+// SeekRangeNumbers 遍历范围数值，支持设置步进值。格式例如：1-2,2-3:2
+func SeekRangeNumbers(expr string, fn func(int) bool) {
+	expa := strings.SplitN(expr, ":", 2)
+	step := 1
+	switch len(expa) {
+	case 2:
+		if i, _ := strconv.Atoi(strings.TrimSpace(expa[1])); i > 0 {
+			step = i
+		}
+		fallthrough
+	case 1:
+		for _, exp := range strings.Split(strings.TrimSpace(expa[0]), `,`) {
+			exp = strings.TrimSpace(exp)
+			if len(exp) == 0 {
+				continue
+			}
+			expb := strings.SplitN(exp, `-`, 2)
+			var minN, maxN int
+			switch len(expb) {
+			case 2:
+				maxN, _ = strconv.Atoi(strings.TrimSpace(expb[1]))
+				fallthrough
+			case 1:
+				minN, _ = strconv.Atoi(strings.TrimSpace(expb[0]))
+			}
+			if maxN == 0 {
+				if !fn(minN) {
+					return
+				}
+				continue
+			}
+			for ; minN <= maxN; minN += step {
+				if !fn(minN) {
+					return
+				}
+			}
+		}
+	}
 }
