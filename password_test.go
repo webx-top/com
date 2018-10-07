@@ -4,6 +4,8 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMakePassword(t *testing.T) {
@@ -31,9 +33,18 @@ func TestMakePassword(t *testing.T) {
 }
 
 func TestAbsURL(t *testing.T) {
-	fmt.Println(AbsURL(`https://www.coscms.com/system/download/index`, `../download2/index`))
-	fmt.Println(AbsURL(`https://www.coscms.com/system/download/index`, `../../system2/download2/index`))
-	fmt.Println(AbsURL(`https://www.coscms.com/system/download/index`, `/payment/index/index`))
+	pageURL := AbsURL(`https://www.coscms.com/system/download/index`, `../download2/index`)
+	assert.Equal(t, `https://www.coscms.com/system/download2/index`, pageURL)
+
+	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `../../system2/download2/index`)
+	assert.Equal(t, `https://www.coscms.com/system2/download2/index`, pageURL)
+
+	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `/payment/index/index`)
+	assert.Equal(t, `https://www.coscms.com/payment/index/index`, pageURL)
+
+	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `./payment/index/index`)
+	assert.Equal(t, `https://www.coscms.com/system/download/payment/index/index`, pageURL)
+
 	fmt.Println(`SelfDir:`, SelfDir())
 	fmt.Println(`SelfPath:`, SelfPath())
 }
