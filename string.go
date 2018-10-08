@@ -264,18 +264,25 @@ func IsASCIIUpper(r rune) bool {
 	return 'A' <= r && r <= 'Z'
 }
 
-func IsASCII(r rune) bool {
+func ToASCIIUpper(r rune) rune {
+	if 'a' <= r && r <= 'z' {
+		r -= ('a' - 'A')
+	}
+	return r
+}
+
+func IsAlpha(r rune) bool {
 	if ('Z' < r || r < 'A') && ('z' < r || r < 'a') {
 		return false
 	}
 	return true
 }
 
-func ToASCIIUpper(r rune) rune {
-	if 'a' <= r && r <= 'z' {
-		r -= ('a' - 'A')
+func IsAlphaNumeric(r rune) bool {
+	if ('Z' < r || r < 'A') && ('z' < r || r < 'a') && ('9' < r || r < '0') {
+		return false
 	}
-	return r
+	return true
 }
 
 // GonicCase : webxTop => webx_top
