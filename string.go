@@ -264,6 +264,13 @@ func IsASCIIUpper(r rune) bool {
 	return 'A' <= r && r <= 'Z'
 }
 
+func IsASCII(r rune) bool {
+	if ('Z' < r || r < 'A') && ('z' < r || r < 'a') {
+		return false
+	}
+	return true
+}
+
 func ToASCIIUpper(r rune) rune {
 	if 'a' <= r && r <= 'z' {
 		r -= ('a' - 'A')
