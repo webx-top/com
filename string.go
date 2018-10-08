@@ -285,6 +285,13 @@ func IsAlphaNumeric(r rune) bool {
 	return true
 }
 
+func IsNumeric(r rune) bool {
+	if '9' < r || r < '0' {
+		return false
+	}
+	return true
+}
+
 // GonicCase : webxTop => webx_top
 func GonicCase(name string) string {
 	s := make([]rune, 0, len(name)+3)
