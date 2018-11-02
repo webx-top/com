@@ -250,6 +250,20 @@ func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
 	return RunCmdWithWriter(params, writer...)
 }
 
+func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
+	cmd := CreateCmdWithWriter(params, writer...)
+	cmd.Stdin = reader
+
+	go func() {
+		err := cmd.Run()
+		if err != nil {
+			cmd.Stderr.Write([]byte(err.Error()))
+		}
+	}()
+
+	return cmd
+}
+
 func RunCmdWithWriter(params []string, writer ...io.Writer) *exec.Cmd {
 	cmd := CreateCmdWithWriter(params, writer...)
 
