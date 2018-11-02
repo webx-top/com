@@ -163,6 +163,38 @@ func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
 	return
 }
 
+func NewCmdChanReader() *CmdChanReader {
+	return &CmdChanReader{ch: make(chan []byte)}
+}
+
+type CmdChanReader struct {
+	ch chan []byte
+}
+
+func (c *CmdChanReader) Read(p []byte) (n int, err error) {
+	if c.ch == nil {
+		c.ch = make(chan []byte)
+	}
+	r := <-c.ch
+	p = append(p, r...)
+	return len(r), nil
+}
+
+func (c *CmdChanReader) Close() {
+	close(c.ch)
+	c.ch = nil
+}
+
+func (c *CmdChanReader) Send(b []byte) *CmdChanReader {
+	c.ch <- b
+	return c
+}
+
+func (c *CmdChanReader) SendString(s string) *CmdChanReader {
+	c.ch <- Str2bytes(s)
+	return c
+}
+
 func NewCmdStartResultCapturer(writer io.Writer, duration time.Duration) *CmdStartResultCapturer {
 	return &CmdStartResultCapturer{
 		writer:   writer,
