@@ -164,20 +164,19 @@ func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
 }
 
 func NewCmdChanReader() *CmdChanReader {
-	return &CmdChanReader{ch: make(chan []byte)}
+	return &CmdChanReader{ch: make(chan io.Reader)}
 }
 
 type CmdChanReader struct {
-	ch chan []byte
+	ch chan io.Reader
 }
 
 func (c *CmdChanReader) Read(p []byte) (n int, err error) {
 	if c.ch == nil {
-		c.ch = make(chan []byte)
+		c.ch = make(chan io.Reader)
 	}
 	r := <-c.ch
-	p = append(p, r...)
-	return len(r), nil
+	return r.Read(p)
 }
 
 func (c *CmdChanReader) Close() {
@@ -186,12 +185,12 @@ func (c *CmdChanReader) Close() {
 }
 
 func (c *CmdChanReader) Send(b []byte) *CmdChanReader {
-	c.ch <- b
+	c.ch <- bytes.NewReader(b)
 	return c
 }
 
 func (c *CmdChanReader) SendString(s string) *CmdChanReader {
-	c.ch <- Str2bytes(s)
+	c.ch <- strings.NewReader(s)
 	return c
 }
 
