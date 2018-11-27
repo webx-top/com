@@ -33,6 +33,7 @@ func (l *logWriter) String() string {
 }
 
 func TestMonitor(t *testing.T) {
+	var err error
 	w := newLogWriter()
 	log.SetOutput(w)
 	os.Mkdir(`testdata`, os.ModePerm)
@@ -54,10 +55,13 @@ func TestMonitor(t *testing.T) {
 			fmt.Println(`rename----------->`, file)
 		},
 	}
-	me.Watch(`testdata`)
+	me.Watch()
+	me.AddDir(`testdata`)
 	time.Sleep(time.Second * 1)
 
-	os.Mkdir(`testdata/aa`, os.ModePerm)
+	fmt.Println(``)
+	fmt.Println(`CREATE: testdata/aa`)
+	os.Mkdir(`testdata/aa`, 0666)
 	time.Sleep(time.Second * 1)
 	s := w.String()
 	if !strings.HasSuffix(strings.TrimSpace(s), `: CREATE`) {
@@ -65,7 +69,9 @@ func TestMonitor(t *testing.T) {
 		fmt.Println(`Fail: CREATE`)
 	}
 
-	os.Chmod(`testdata/aa`, 0666)
+	fmt.Println(``)
+	fmt.Println(`CHMOD: testdata/aa`)
+	os.Chmod(`testdata/aa`, os.ModePerm)
 	time.Sleep(time.Second * 1)
 	s = w.String()
 	if !strings.Contains(s, `: CHMOD`) {
@@ -73,14 +79,21 @@ func TestMonitor(t *testing.T) {
 		fmt.Println(`Fail: CHMOD`)
 	}
 
-	ioutil.WriteFile(`testdata/aa/a.log`, []byte(`test`), 0666)
+	fmt.Println(``)
+	fmt.Println(`WRITE: testdata/aa/a.log`)
+	err = ioutil.WriteFile(`testdata/aa/a.log`, []byte(`test`), 0666)
+	if err != nil {
+		panic(err)
+	}
 	time.Sleep(time.Second * 1)
 	s = w.String()
-	if !strings.HasSuffix(strings.TrimSpace(s), `: WRITE`) {
+	if !strings.HasSuffix(strings.TrimSpace(s), `: CREATE`) {
 		fmt.Print(`[log]`, s)
-		fmt.Println(`Fail: WRITE`)
+		fmt.Println(`Fail: CREATE`)
 	}
 
+	fmt.Println(``)
+	fmt.Println(`CHMOD: testdata/aa/a.log`)
 	os.Chmod(`testdata/aa/a.log`, os.ModePerm)
 	time.Sleep(time.Second * 1)
 	s = w.String()
@@ -89,6 +102,8 @@ func TestMonitor(t *testing.T) {
 		fmt.Println(`Fail: CHMOD`)
 	}
 
+	fmt.Println(``)
+	fmt.Println(`CREATE: testdata/bb`)
 	os.Mkdir(`testdata/bb`, os.ModePerm)
 	time.Sleep(time.Second * 1)
 	s = w.String()
@@ -97,15 +112,22 @@ func TestMonitor(t *testing.T) {
 		fmt.Println(`Fail: CREATE`)
 	}
 
+	fmt.Println(``)
+	fmt.Println(`WRITE: testdata/bb/b.log`)
 	ioutil.WriteFile(`testdata/bb/b.log`, []byte(`test`), 0666)
-	time.Sleep(time.Second * 1)
+	time.Sleep(time.Second * 2)
 	s = w.String()
-	if !strings.HasSuffix(strings.TrimSpace(s), `: WRITE`) {
+	if !strings.HasSuffix(strings.TrimSpace(s), `: CREATE`) {
 		fmt.Print(`[log]`, s)
-		fmt.Println(`Fail: WRITE`)
+		fmt.Println(`Fail: CREATE`)
 	}
 
-	os.Rename(`testdata/bb/b.log`, `testdata/bb/bb.log`)
+	fmt.Println(``)
+	fmt.Println(`RENAME: testdata/bb/b.log`)
+	err = os.Rename(`testdata/bb/b.log`, `testdata/bb/bb.log`)
+	if err != nil {
+		panic(err)
+	}
 	time.Sleep(time.Second * 1)
 	s = w.String()
 	if !strings.Contains(s, `: RENAME`) {
@@ -113,6 +135,8 @@ func TestMonitor(t *testing.T) {
 		fmt.Println(`Fail: RENAME`)
 	}
 
+	fmt.Println(``)
+	fmt.Println(`REMOVE: testdata/bb/bb.log`)
 	os.Remove(`testdata/bb/bb.log`)
 	time.Sleep(time.Second * 1)
 	s = w.String()
@@ -121,6 +145,8 @@ func TestMonitor(t *testing.T) {
 		fmt.Println(`Fail: REMOVE`)
 	}
 
+	fmt.Println(``)
+	fmt.Println(`REMOVE: testdata/bb`)
 	os.Remove(`testdata/bb`)
 	time.Sleep(time.Second * 1)
 	s = w.String()
@@ -129,6 +155,8 @@ func TestMonitor(t *testing.T) {
 		fmt.Println(`Fail: REMOVE`)
 	}
 
+	fmt.Println(``)
+	fmt.Println(`REMOVE: testdata/aa/a.log`)
 	os.Remove(`testdata/aa/a.log`)
 	time.Sleep(time.Second * 1)
 	s = w.String()
@@ -137,6 +165,8 @@ func TestMonitor(t *testing.T) {
 		fmt.Println(`Fail: REMOVE`)
 	}
 
+	fmt.Println(``)
+	fmt.Println(`REMOVE: testdata`)
 	os.RemoveAll(`testdata`)
 	time.Sleep(time.Second * 1)
 	s = w.String()

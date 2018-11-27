@@ -28,7 +28,8 @@ func main() {
 			fmt.Println(`rename----------->`, file)
 		},
 	}
-	me.Watch(`testdata`)
+	me.Watch()
+	me.AddDir(`testdata`)
 
 	os.Mkdir(`testdata/aa`, os.ModePerm)
 
