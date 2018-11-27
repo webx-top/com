@@ -19,6 +19,7 @@ package com
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/ioutil"
 	"os"
@@ -176,6 +177,9 @@ func (c *CmdChanReader) Read(p []byte) (n int, err error) {
 		c.ch = make(chan io.Reader)
 	}
 	r := <-c.ch
+	if r == nil {
+		return 0, errors.New(`CmdChanReader Chan has been closed`)
+	}
 	return r.Read(p)
 }
 
