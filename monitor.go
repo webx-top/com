@@ -29,17 +29,17 @@ import (
 )
 
 var (
-	DefaultMonitor = NewMonitor()
-	defaultEventFn = func(string) {}
+	DefaultMonitor      = NewMonitor()
+	MonitorEventEmptyFn = func(string) {}
 )
 
 func NewMonitor() *MonitorEvent {
 	return &MonitorEvent{
-		Create:  defaultEventFn,
-		Delete:  defaultEventFn,
-		Modify:  defaultEventFn,
-		Chmod:   defaultEventFn,
-		Rename:  defaultEventFn,
+		Create:  MonitorEventEmptyFn,
+		Delete:  MonitorEventEmptyFn,
+		Modify:  MonitorEventEmptyFn,
+		Chmod:   MonitorEventEmptyFn,
+		Rename:  MonitorEventEmptyFn,
 		filters: []func(string) bool{},
 	}
 }
