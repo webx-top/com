@@ -28,6 +28,22 @@ import (
 	"github.com/admpub/fsnotify"
 )
 
+var (
+	DefaultMonitor = NewMonitor()
+	defaultEventFn = func(string) {}
+)
+
+func NewMonitor() *MonitorEvent {
+	return &MonitorEvent{
+		Create:  defaultEventFn,
+		Delete:  defaultEventFn,
+		Modify:  defaultEventFn,
+		Chmod:   defaultEventFn,
+		Rename:  defaultEventFn,
+		filters: []func(string) bool{},
+	}
+}
+
 //MonitorEvent 监控事件函数
 type MonitorEvent struct {
 	//文件事件
@@ -189,8 +205,6 @@ func (m *MonitorEvent) IsDir(path string) bool {
 	}
 	return d.IsDir()
 }
-
-var DefaultMonitor = MonitorEvent{}
 
 //Monitor 文件监测
 func Monitor(rootDir string, callback *MonitorEvent, args ...func(string) bool) error {
