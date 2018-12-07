@@ -11,7 +11,7 @@ import (
 
 func main() {
 	url := flag.String("url", "http://storage.googleapis.com/vimeo-test/work-at-vimeo.mp4", "URL for download")
-	threads := flag.Int("threads", 100, "Number of threads to download with")
+	threads := flag.Int("threads", 10, "Number of threads to download with")
 	flag.Parse()
 
 	u, err := nurl.Parse(*url)

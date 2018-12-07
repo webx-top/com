@@ -23,7 +23,7 @@ var (
 )
 
 func RangeDownload(url string, saveTo string, args ...int) error {
-	threads := 100
+	threads := 10
 	if len(args) > 0 {
 		threads = args[0]
 	}
@@ -138,15 +138,14 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 	return err
 }
 
-func assembleChunk(filename string, outfile *os.File) {
+func assembleChunk(filename string, outfile *os.File) error {
 	chunkFile, err := os.Open(filename)
 	if err != nil {
-		log.Fatal(err)
-		return
+		return err
 	}
 	defer chunkFile.Close()
 	io.Copy(outfile, chunkFile)
-	os.Remove(filename)
+	return os.Remove(filename)
 }
 
 func fetchChunk(startByte, endByte int64, url string, outfile *os.File, wg *sync.WaitGroup, callback func()) error {
@@ -155,20 +154,20 @@ func fetchChunk(startByte, endByte int64, url string, outfile *os.File, wg *sync
 	}
 	client := new(http.Client)
 	req, err := http.NewRequest("GET", url, nil)
-	defer func() {
-		if err != nil {
-			log.Println(err)
-		} else {
-			//log.Println("Finished Downloading byte ", startByte)
-			if callback != nil {
-				callback()
-			}
-		}
-	}()
-
 	if err != nil {
 		return err
 	}
+	defer func() {
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		//log.Println("Finished Downloading byte ", startByte, `(`+FormatByte(startByte)+`)`)
+		if callback != nil {
+			callback()
+		}
+	}()
+
 	req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", startByte, endByte-1))
 	res, err := client.Do(req)
 	/*
@@ -191,15 +190,12 @@ func fetchChunk(startByte, endByte int64, url string, outfile *os.File, wg *sync
 		return err
 	}
 	defer res.Body.Close()
-	if err != nil {
-		return err
-	}
 	ra, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
-	outfile.WriteAt(ra, startByte)
-	return nil
+	_, err = outfile.WriteAt(ra, startByte)
+	return err
 }
 
 func timeTrack(start time.Time, name string) {
