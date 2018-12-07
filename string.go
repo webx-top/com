@@ -27,6 +27,7 @@ import (
 	"encoding/json"
 	"hash"
 	"io"
+	"io/ioutil"
 	r "math/rand"
 	"strconv"
 	"strings"
@@ -56,6 +57,11 @@ func ByteMd5(b []byte) string {
 	m := md5.New()
 	m.Write(b)
 	return hex.EncodeToString(m.Sum(nil))
+}
+
+func Md5file(file string) string {
+	barray, _ := ioutil.ReadFile(file)
+	return ByteMd5(barray)
 }
 
 func Token(key string, val []byte, args ...string) string {

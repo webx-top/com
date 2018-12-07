@@ -3,7 +3,7 @@ package com
 import (
 	"bytes"
 	"crypto/md5"
-	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -61,12 +61,12 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 		log.Println("Ranges Supported!")
 		log.Println("Content Size:", contentLength)
 		if contentSize <= startByte {
-			log.Println("Download Complete! Total Size:", contentSize)
+			log.Println("Download Complete! Total Size:", contentSize, `(`+FormatByte(contentSize)+`)`)
 			return nil
 		}
 		contentSize -= startByte
 		calculatedChunksize := contentSize / int64(threads)
-		log.Println("Chunk Size: ", calculatedChunksize)
+		log.Println("Chunk Size: ", calculatedChunksize, `(`+FormatByte(calculatedChunksize)+`)`)
 		var endByte int64
 		chunks := 0
 		completedChunks := 0
@@ -94,7 +94,7 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 			chunks++
 		}
 		wg.Wait()
-		log.Println("Download Complete! Total Size:", contentSize)
+		log.Println("Download Complete! Total Size:", contentSize, `(`+FormatByte(contentSize)+`)`)
 		log.Println("Building File...")
 		defer timeTrack(time.Now(), "File Assembled")
 		//Verify file size
@@ -107,11 +107,16 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 			return errors.New(fmt.Sprint("Actual Size: ", actualFileSize, " Expected: ", contentSize))
 		}
 		//Verify Md5
-		if len(resp.Header["X-Goog-Hash"]) > 1 && len(resp.Header["X-Goog-Hash"][1]) > 4 {
-			contentMd5, err := base64.StdEncoding.DecodeString(resp.Header["X-Goog-Hash"][1][4:])
-			if err != nil {
-				return err
+		fileHash := resp.Header.Get("X-File-Hash")
+		if len(fileHash) == 0 {
+			if len(resp.Header["X-Goog-Hash"]) > 1 {
+				if len(resp.Header["X-Goog-Hash"][1]) > 4 {
+					fileHash = resp.Header["X-Goog-Hash"][1][4:]
+				}
 			}
+		}
+		if len(fileHash) > 0 {
+			contentMd5, err := hex.DecodeString(fileHash)
 			if err != nil {
 				return err
 			}
