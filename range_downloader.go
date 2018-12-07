@@ -59,7 +59,7 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 	if resp.Header.Get("Accept-Ranges") == "bytes" {
 		var wg sync.WaitGroup
 		log.Println("Ranges Supported!")
-		log.Println("Content Size:", contentLength)
+		log.Println("Content Size:", contentLength, `(`+FormatByte(contentSize)+`)`)
 		if contentSize <= startByte {
 			log.Println("Download Complete! Total Size:", contentSize, `(`+FormatByte(contentSize)+`)`)
 			return nil
