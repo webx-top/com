@@ -61,23 +61,26 @@ type MonitorEvent struct {
 	filters []func(string) bool
 }
 
-func (m *MonitorEvent) AddFilter(args ...func(string) bool) {
+func (m *MonitorEvent) AddFilter(args ...func(string) bool) *MonitorEvent {
 	if m.filters == nil {
 		m.filters = []func(string) bool{}
 	}
 	m.filters = append(m.filters, args...)
+	return m
 }
 
-func (m *MonitorEvent) SetFilters(args ...func(string) bool) {
+func (m *MonitorEvent) SetFilters(args ...func(string) bool) *MonitorEvent {
 	m.filters = args
+	return m
 }
 
-func (m *MonitorEvent) Watch(args ...func(string) bool) {
+func (m *MonitorEvent) Watch(args ...func(string) bool) *MonitorEvent {
 	m.SetFilters(args...)
 	go func() {
 		m.backendListen()
 		<-m.Channel
 	}()
+	return m
 }
 
 func (m *MonitorEvent) Close() error {
@@ -104,8 +107,9 @@ func (m *MonitorEvent) Watcher() *fsnotify.Watcher {
 	return m.watcher
 }
 
-func (m *MonitorEvent) backendListen() {
+func (m *MonitorEvent) backendListen() *MonitorEvent {
 	go m.listen()
+	return m
 }
 
 func (m *MonitorEvent) AddDir(dir string) error {
