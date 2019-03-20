@@ -25,6 +25,7 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"hash"
 	"io"
 	"io/ioutil"
@@ -481,4 +482,9 @@ func MaskString(v string, width ...float64) string {
 		}
 	}
 	return v[0:1] + strings.Repeat(`*`, size-1)
+}
+
+// LeftPadZero 字符串指定长度，长度不足的时候左边补零
+func LeftPadZero(input string, padLength int) string {
+	return fmt.Sprintf(`%0*s`, padLength, input)
 }
