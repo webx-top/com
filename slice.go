@@ -110,6 +110,86 @@ func InSliceIface(v interface{}, sl []interface{}) bool {
 	return false
 }
 
+func InStringSlice(v string, sl []string) bool {
+	return InSlice(v, sl)
+}
+
+func InInterfaceSlice(v interface{}, sl []interface{}) bool {
+	return InSliceIface(v, sl)
+}
+
+func InIntSlice(v int, sl []int) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InInt32Slice(v int32, sl []int32) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InInt16Slice(v int16, sl []int16) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InInt64Slice(v int64, sl []int64) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InUintSlice(v uint, sl []uint) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InUint32Slice(v uint32, sl []uint32) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InUint16Slice(v uint16, sl []uint16) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InUint64Slice(v uint64, sl []uint64) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
+
 func SliceRandList(min, max int) []int {
 	if max < min {
 		min, max = max, min
