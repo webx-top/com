@@ -256,7 +256,7 @@ func SeekRangeNumbers(expr string, fn func(int) bool) {
 	step := 1
 	switch len(expa) {
 	case 2:
-		if i, _ := strconv.Atoi(strings.TrimSpace(expa[1])); i > 0 {
+		if i, e := strconv.Atoi(strings.TrimSpace(expa[1])); e == nil {
 			step = i
 		}
 		fallthrough
