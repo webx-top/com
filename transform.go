@@ -25,225 +25,244 @@ import (
 )
 
 func Int64(i interface{}) int64 {
-	if v, y := i.(int64); y {
+	switch v := i.(type) {
+	case int64:
 		return v
-	}
-	if v, y := i.(int32); y {
+	case int32:
 		return int64(v)
-	}
-	if v, y := i.(uint32); y {
+	case uint32:
 		return int64(v)
-	}
-	if v, y := i.(int); y {
+	case int:
 		return int64(v)
-	}
-	if v, y := i.(uint); y {
+	case uint:
 		return int64(v)
-	}
-	if v, y := i.(string); y {
-		v, _ := strconv.ParseInt(v, 10, 64)
-		return v
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case string:
+		out, _ := strconv.ParseInt(v, 10, 64)
+		return out
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseInt(in, 10, 64)
+		if err != nil {
+			log.Printf("string[%s] covert int64 fail. %s", in, err)
+			return 0
+		}
+		return out
 	}
-	out, err := strconv.ParseInt(in, 10, 64)
-	if err != nil {
-		log.Printf("string[%s] covert int64 fail. %s", in, err)
-		return 0
-	}
-	return out
 }
 
 func Int(i interface{}) int {
-	if v, y := i.(int); y {
+	switch v := i.(type) {
+	case int:
 		return v
-	}
-	if v, y := i.(string); y {
-		v, _ := strconv.Atoi(v)
-		return v
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case string:
+		out, _ := strconv.Atoi(v)
+		return out
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.Atoi(in)
+		if err != nil {
+			log.Printf("string[%s] covert int fail. %s", in, err)
+			return 0
+		}
+		return out
 	}
-	out, err := strconv.Atoi(in)
-	if err != nil {
-		log.Printf("string[%s] covert int fail. %s", in, err)
-		return 0
-	}
-	return out
 }
 
 func Int32(i interface{}) int32 {
-	if v, y := i.(int32); y {
+	switch v := i.(type) {
+	case int32:
 		return v
-	}
-	if v, y := i.(string); y {
-		v, _ := strconv.ParseInt(v, 10, 32)
-		return int32(v)
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case string:
+		out, _ := strconv.ParseInt(v, 10, 32)
+		return int32(out)
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseInt(in, 10, 32)
+		if err != nil {
+			log.Printf("string[%s] covert int32 fail. %s", in, err)
+			return 0
+		}
+		return int32(out)
 	}
-	out, err := strconv.ParseInt(in, 10, 32)
-	if err != nil {
-		log.Printf("string[%s] covert int32 fail. %s", in, err)
-		return 0
-	}
-	return int32(out)
 }
 
 func Uint64(i interface{}) uint64 {
-	if v, y := i.(uint64); y {
+	switch v := i.(type) {
+	case uint64:
 		return v
-	}
-	if v, y := i.(string); y {
-		v, _ := strconv.ParseUint(v, 10, 64)
-		return v
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case string:
+		out, _ := strconv.ParseUint(v, 10, 64)
+		return out
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseUint(in, 10, 64)
+		if err != nil {
+			log.Printf("string[%s] covert uint64 fail. %s", in, err)
+			return 0
+		}
+		return out
 	}
-	out, err := strconv.ParseUint(in, 10, 64)
-	if err != nil {
-		log.Printf("string[%s] covert uint64 fail. %s", in, err)
-		return 0
-	}
-	return out
 }
 
 func Uint(i interface{}) uint {
-	if v, y := i.(uint); y {
+	switch v := i.(type) {
+	case uint:
 		return v
-	}
-	if v, y := i.(string); y {
-		v, _ := strconv.ParseUint(v, 10, 32)
-		return uint(v)
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case string:
+		out, _ := strconv.ParseUint(v, 10, 32)
+		return uint(out)
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseUint(in, 10, 32)
+		if err != nil {
+			log.Printf("string[%s] covert uint fail. %s", in, err)
+			return 0
+		}
+		return uint(out)
 	}
-	out, err := strconv.ParseUint(in, 10, 32)
-	if err != nil {
-		log.Printf("string[%s] covert uint fail. %s", in, err)
-		return 0
-	}
-	return uint(out)
 }
 
 func Uint32(i interface{}) uint32 {
-	if v, y := i.(uint32); y {
+	switch v := i.(type) {
+	case uint32:
 		return v
-	}
-	if v, y := i.(string); y {
-		v, _ := strconv.ParseUint(v, 10, 32)
-		return uint32(v)
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case string:
+		out, _ := strconv.ParseUint(v, 10, 32)
+		return uint32(out)
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseUint(in, 10, 32)
+		if err != nil {
+			log.Printf("string[%s] covert uint32 fail. %s", in, err)
+			return 0
+		}
+		return uint32(out)
 	}
-	out, err := strconv.ParseUint(in, 10, 32)
-	if err != nil {
-		log.Printf("string[%s] covert uint32 fail. %s", in, err)
-		return 0
-	}
-	return uint32(out)
 }
 
 func Float32(i interface{}) float32 {
-	if v, y := i.(float32); y {
+	switch v := i.(type) {
+	case float32:
 		return v
-	}
-	if v, y := i.(int32); y {
+	case int32:
 		return float32(v)
-	}
-	if v, y := i.(uint32); y {
+	case uint32:
 		return float32(v)
-	}
-	if v, y := i.(string); y {
-		v, _ := strconv.ParseFloat(v, 32)
-		return float32(v)
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case string:
+		out, _ := strconv.ParseFloat(v, 32)
+		return float32(out)
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseFloat(in, 32)
+		if err != nil {
+			log.Printf("string[%s] covert float32 fail. %s", in, err)
+			return 0
+		}
+		return float32(out)
 	}
-	out, err := strconv.ParseFloat(in, 32)
-	if err != nil {
-		log.Printf("string[%s] covert float32 fail. %s", in, err)
-		return 0
-	}
-	return float32(out)
 }
 
 func Float64(i interface{}) float64 {
-	if v, y := i.(float64); y {
+	switch v := i.(type) {
+	case float64:
 		return v
-	}
-	if v, y := i.(int64); y {
+	case int64:
 		return float64(v)
-	}
-	if v, y := i.(uint64); y {
+	case uint64:
 		return float64(v)
-	}
-	if v, y := i.(float32); y {
+	case float32:
 		return float64(v)
-	}
-	if v, y := i.(int32); y {
+	case int32:
 		return float64(v)
-	}
-	if v, y := i.(uint32); y {
+	case uint32:
 		return float64(v)
-	}
-	if v, y := i.(int); y {
+	case int:
 		return float64(v)
-	}
-	if v, y := i.(uint); y {
+	case uint:
 		return float64(v)
-	}
-	if v, y := i.(string); y {
-		v, _ := strconv.ParseFloat(v, 64)
-		return v
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case string:
+		out, _ := strconv.ParseFloat(v, 64)
+		return out
+	case nil:
 		return 0
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return 0
+		}
+		out, err := strconv.ParseFloat(in, 64)
+		if err != nil {
+			log.Printf("string[%s] covert float64 fail. %s", in, err)
+			return 0
+		}
+		return out
 	}
-	out, err := strconv.ParseFloat(in, 64)
-	if err != nil {
-		log.Printf("string[%s] covert float64 fail. %s", in, err)
-		return 0
-	}
-	return out
 }
 
 func Bool(i interface{}) bool {
-	if v, y := i.(bool); y {
+	switch v := i.(type) {
+	case bool:
 		return v
-	}
-	in := Str(i)
-	if len(in) == 0 {
+	case nil:
 		return false
+	default:
+		in := Str(i)
+		if len(in) == 0 {
+			return false
+		}
+		out, err := strconv.ParseBool(in)
+		if err != nil {
+			log.Printf("string[%s] covert bool fail. %s", in, err)
+			return false
+		}
+		return out
 	}
-	out, err := strconv.ParseBool(in)
-	if err != nil {
-		log.Printf("string[%s] covert bool fail. %s", in, err)
-		return false
-	}
-	return out
 }
 
-func Str(v interface{}) string {
-	if v, y := v.(string); y {
+func Str(i interface{}) string {
+	switch v := i.(type) {
+	case string:
 		return v
+	case nil:
+		return ``
+	default:
+		return fmt.Sprint(v)
 	}
-	return fmt.Sprintf("%v", v)
 }
 
 func String(v interface{}) string {
