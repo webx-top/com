@@ -15,5 +15,4 @@ func TestLoop(t *testing.T) {
 	}, time.Second*1)
 	time.Sleep(time.Second * 5)
 	cancel()
-	panic(`---`)
 }
