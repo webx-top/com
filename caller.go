@@ -93,9 +93,11 @@ func CallFunc(getFuncByName func(string) (interface{}, bool), funcName string, p
 }
 
 func CalledAtFileLine(skip int) string {
-	_, file, line, ok := runtime.Caller(skip)
+	pc, file, line, ok := runtime.Caller(skip)
 	if !ok {
 		return ``
 	}
-	return file + `:` + fmt.Sprint(line)
+
+	f := runtime.FuncForPC(pc)
+	return file + `:` + fmt.Sprint(line) + ` (` + f.Name() + `)`
 }
