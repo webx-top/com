@@ -19,6 +19,7 @@ package com
 
 import (
 	"errors"
+	"fmt"
 	"path"
 	"reflect"
 	"runtime"
@@ -89,4 +90,12 @@ func CallFunc(getFuncByName func(string) (interface{}, bool), funcName string, p
 		in[k] = reflect.ValueOf(param)
 	}
 	return f.Call(in), nil
+}
+
+func CalledAtFileLine(skip int) string {
+	_, file, line, ok := runtime.Caller(skip)
+	if !ok {
+		return ``
+	}
+	return file + `:` + fmt.Sprint(line)
 }
