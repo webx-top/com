@@ -30,6 +30,7 @@ import (
 	"io"
 	"io/ioutil"
 	r "math/rand"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -487,4 +488,18 @@ func MaskString(v string, width ...float64) string {
 // LeftPadZero 字符串指定长度，长度不足的时候左边补零
 func LeftPadZero(input string, padLength int) string {
 	return fmt.Sprintf(`%0*s`, padLength, input)
+}
+
+var (
+	reSpaceLine     = regexp.MustCompile("([\\t\\s\r]*\n){2,}")
+	BreakLine       = []byte("\n")
+	BreakLineString = "\n"
+)
+
+func CleanSpaceLine(b []byte) []byte {
+	return reSpaceLine.ReplaceAll(b, BreakLine)
+}
+
+func CleanSpaceLineString(b string) string {
+	return reSpaceLine.ReplaceAllString(b, BreakLineString)
 }
