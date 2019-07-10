@@ -302,6 +302,9 @@ func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writ
 	go func() {
 		err := cmd.Run()
 		if err != nil {
+			if e, y := err.(*exec.ExitError); y {
+				OnCmdExitError(params, e)
+			}
 			cmd.Stderr.Write([]byte(err.Error()))
 		}
 	}()
