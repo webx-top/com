@@ -9,6 +9,7 @@ import (
 )
 
 func TestMakePassword(t *testing.T) {
+	panic(RestoreTime(`2001-01-01T00:00:03Z`).Format(`2006-01-02 15:04:05`))
 	hashed := MakePassword(`github.com/webx-top/com`, ``)
 	fmt.Println(`hashed`, hashed, len(hashed))
 	if CheckPassword(`github.com/webx-top/com`, hashed, ``) == false {
