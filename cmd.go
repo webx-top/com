@@ -294,7 +294,7 @@ func RunCmdStrWithWriter(command string, writer ...io.Writer) *exec.Cmd {
 }
 
 var OnCmdExitError = func(params []string, err *exec.ExitError) {
-	fmt.Printf("[%v]The process exited abnormally: PID(%d) PARAMS(%#v) ERR(%v)\n", time.Now().Format(`2006-01-02 15:04:05`), err.Pid(), params, err)
+	fmt.Printf("[%v]The process exited abnormally: PID(%d) PARAMS(%v) ERR(%v)\n", time.Now().Format(`2006-01-02 15:04:05`), err.Pid(), params, err)
 }
 
 func RunCmdWithReaderWriter(params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
