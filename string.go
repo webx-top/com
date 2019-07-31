@@ -331,7 +331,7 @@ func TitleCase(name string) string {
 		case upNextChar:
 			upNextChar = false
 			chr = ToASCIIUpper(chr)
-		case chr == '_':
+		case chr == '_', chr == ' ':
 			upNextChar = true
 			continue
 		}
