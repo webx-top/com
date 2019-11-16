@@ -9,6 +9,8 @@ import (
 
 func TestNumberTrim(t *testing.T) {
 	s := `2.123987666`
+	i := Float2int(s)
+	assert.Equal(t, 2, i)
 	r := NumberTrim(s, 5)
 	assert.Equal(t, `2.12398`, r)
 	r = NumberTrim(s, 1, ``)
