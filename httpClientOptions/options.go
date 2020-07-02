@@ -11,13 +11,6 @@ import (
 	"github.com/webx-top/com"
 )
 
-func Apply(client *http.Client, options ...com.HTTPClientOptions) *http.Client {
-	for _, option := range options {
-		option(client)
-	}
-	return client
-}
-
 func InsecureSkipVerify(skips ...bool) com.HTTPClientOptions {
 	skip := true
 	if len(skips) > 0 {
