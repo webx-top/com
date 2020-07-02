@@ -238,6 +238,12 @@ func ForceAttemptHTTP2(on bool) com.HTTPClientOptions {
 	}
 }
 
+func Transport(tr *http.Transport) com.HTTPClientOptions {
+	return func(c *http.Client) {
+		c.Transport = tr
+	}
+}
+
 func CheckRedirect(fn func(req *http.Request, via []*http.Request) error) com.HTTPClientOptions {
 	return func(c *http.Client) {
 		c.CheckRedirect = fn
