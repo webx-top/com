@@ -249,3 +249,9 @@ func CookieJar(cookieJar http.CookieJar) com.HTTPClientOptions {
 		c.Jar = cookieJar
 	}
 }
+
+func Timeout(timeout time.Duration) com.HTTPClientOptions {
+	return func(c *http.Client) {
+		c.Timeout = timeout
+	}
+}
