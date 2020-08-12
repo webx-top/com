@@ -28,10 +28,14 @@ func TestReflect(v interface{}) {
 	for i := 0; i < val.NumField(); i++ {
 		vt := typ.Field(i)
 		vv := val.Field(i)
+		var extInfo []string
+		if vt.Anonymous {
+			extInfo = append(extInfo, `anonymous`)
+		}
 		if vv.CanInterface() {
-			fmt.Printf("Type: %v => %v;  Field name: %v\n", vv.Kind(), vv.Interface(), vt.Name)
+			fmt.Printf("Type: %v => %v (%v); Index: %v;  Field name: %v\n", vv.Kind(), vv.Interface(), extInfo, i, vt.Name)
 		} else {
-			fmt.Printf("Type: %v => %v;  Field name: %v\n", vv.Kind(), "<unexported>", vt.Name)
+			fmt.Printf("Type: %v => %v (%v); Index: %v;  Field name: %v\n", vv.Kind(), "<unexported>", extInfo, i, vt.Name)
 		}
 	}
 	fmt.Println("==================[/" + name + "]==================")
