@@ -18,7 +18,6 @@
 package com
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -335,14 +334,7 @@ func Bool(i interface{}) bool {
 }
 
 func Str(i interface{}) string {
-	switch v := i.(type) {
-	case string:
-		return v
-	case nil:
-		return ``
-	default:
-		return fmt.Sprint(v)
-	}
+	return ToStr(i)
 }
 
 func String(v interface{}) string {
