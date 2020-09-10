@@ -18,6 +18,7 @@
 package com
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -45,7 +46,7 @@ func Int64(i interface{}) int64 {
 	case nil:
 		return 0
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return 0
 		}
@@ -74,7 +75,7 @@ func Int(i interface{}) int {
 	case nil:
 		return 0
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return 0
 		}
@@ -101,7 +102,7 @@ func Int32(i interface{}) int32 {
 	case nil:
 		return 0
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return 0
 		}
@@ -138,7 +139,7 @@ func Uint64(i interface{}) uint64 {
 	case nil:
 		return 0
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return 0
 		}
@@ -173,7 +174,7 @@ func Uint(i interface{}) uint {
 	case nil:
 		return 0
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return 0
 		}
@@ -210,7 +211,7 @@ func Uint32(i interface{}) uint32 {
 	case nil:
 		return 0
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return 0
 		}
@@ -255,7 +256,7 @@ func Float32(i interface{}) float32 {
 	case nil:
 		return 0
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return 0
 		}
@@ -300,7 +301,7 @@ func Float64(i interface{}) float64 {
 	case nil:
 		return 0
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return 0
 		}
@@ -320,7 +321,7 @@ func Bool(i interface{}) bool {
 	case nil:
 		return false
 	default:
-		in := Str(i)
+		in := fmt.Sprint(i)
 		if len(in) == 0 {
 			return false
 		}
