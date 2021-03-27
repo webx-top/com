@@ -9,7 +9,8 @@ import (
 )
 
 func TestDoOnce(t *testing.T) {
-	doo := DoOnce{}
+	doo := NewOnce()
+	defer doo.Close()
 	var count int
 
 	wg := &sync.WaitGroup{}
