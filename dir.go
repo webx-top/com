@@ -166,7 +166,6 @@ func MkdirAll(dir string, mode os.FileMode) error {
 			}
 			return nil
 		}
-		panic(fi.Mode().Perm())
 	}
 	needChmodDirs, err := FindNotExistsDirs(dir)
 	if err != nil {
