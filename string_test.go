@@ -33,3 +33,10 @@ func TestSafeBase64(t *testing.T) {
 	}
 	assert.Equal(t, `webx_top`, s)
 }
+
+func TestTitle(t *testing.T) {
+	v := Title(`nickName`)
+	assert.Equal(t, `NickName`, v)
+	v = Title(`nick_name`)
+	assert.Equal(t, `Nick_name`, v)
+}
