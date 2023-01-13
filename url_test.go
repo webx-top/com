@@ -33,3 +33,14 @@ func TestSplitHostPort2(t *testing.T) {
 	assert.Equal(t, `127.0.0.1`, host)
 	assert.Equal(t, ``, port)
 }
+
+func TestRawURLEncode(t *testing.T) {
+	rawText := ` +Gopher`
+	encoded := RawURLEncode(rawText)
+	expected := `%20%2BGopher`
+	assert.Equal(t, expected, encoded)
+	result, _ := URLDecode(expected)
+	assert.Equal(t, rawText, result)
+	result, _ = RawURLDecode(expected)
+	assert.Equal(t, rawText, result)
+}
