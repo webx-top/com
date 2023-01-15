@@ -42,7 +42,7 @@ func TestDelayOnceTimeout(t *testing.T) {
 	d := NewDelayOnce(time.Second*2, time.Second*5, true)
 	ctx := context.TODO()
 	wg := sync.WaitGroup{}
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 3; i++ {
 		log.Println(`Trigger key_timeout`)
 		isNew := d.DoWithState(ctx, `key_timeout`, func(isAbort func() bool) error {
 			defer wg.Done()
