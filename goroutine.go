@@ -137,10 +137,7 @@ func (d *DelayOnce) exec(key string, f func() error) (err error) {
 	session := v.(*eventSession)
 	if time.Since(session.Time()) > d.delay { // 时间超过d.delay才触发
 		err = f()
-		if err != nil {
-			return
-		}
-		session.cancel()
 	}
+	session.cancel()
 	return
 }
