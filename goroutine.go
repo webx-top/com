@@ -2,7 +2,6 @@ package com
 
 import (
 	"context"
-	"errors"
 	"log"
 	"os"
 	"os/signal"
@@ -10,7 +9,7 @@ import (
 	"time"
 )
 
-var ErrExitedByContext = errors.New(`received an exit notification from the context`)
+var ErrExitedByContext = context.Canceled
 
 func Loop(ctx context.Context, exec func() error, duration time.Duration) error {
 	if ctx == nil {
@@ -58,9 +57,10 @@ func NewDelayOnce(delay time.Duration, timeout time.Duration) *DelayOnce {
 // DelayOnce 触发之后延迟一定的时间后再执行。如果在延迟处理的时间段内再次触发，则延迟时间基于此处触发时间顺延
 // d := NewDelayOnce(time.Second*5, time.Hour)
 // ctx := context.TODO()
-// for i:=0; i<10; i++ {
-// 	d.Do(ctx, `key`,func() error { return nil  })
-// }
+//
+//	for i:=0; i<10; i++ {
+//		d.Do(ctx, `key`,func() error { return nil  })
+//	}
 type DelayOnce struct {
 	mp      sync.Map
 	delay   time.Duration
@@ -117,6 +117,7 @@ func (d *DelayOnce) Do(parentCtx context.Context, key string, f func() error) (i
 			defer t.Stop()
 			select {
 			case <-ctx.Done():
+				d.mp.Delete(key)
 				return
 			case <-t.C:
 				if err := d.exec(key, f); err != nil {
@@ -139,7 +140,6 @@ func (d *DelayOnce) exec(key string, f func() error) (err error) {
 		if err != nil {
 			return
 		}
-		d.mp.Delete(key)
 		session.cancel()
 	}
 	return
