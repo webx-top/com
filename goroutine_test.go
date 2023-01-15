@@ -3,6 +3,7 @@ package com
 import (
 	"context"
 	"fmt"
+	"log"
 	"sync"
 	"testing"
 	"time"
@@ -18,21 +19,48 @@ func TestLoop(t *testing.T) {
 	cancel()
 }
 
-func TestDelayOnce(t *testing.T) {
-	d := NewDelayOnce(time.Second*2, time.Hour)
+func TestDelayOnceNormal(t *testing.T) {
+	d := NewDelayOnce(time.Second*2, time.Hour, true)
 	ctx := context.TODO()
 	wg := sync.WaitGroup{}
 	for i := 0; i < 10; i++ {
-		fmt.Println(`Trigger`, time.Now())
-		isNew := d.Do(ctx, `key`, func() error {
+		log.Println(`Trigger key_normal`)
+		isNew := d.Do(ctx, `key_normal`, func() error {
 			defer wg.Done()
-			fmt.Println(`Execute`, time.Now())
+			log.Println(`Execute key_normal`)
 			return nil
 		})
 		if isNew {
 			wg.Add(1)
 		}
 		time.Sleep(time.Second * 2)
+	}
+	wg.Wait()
+}
+
+func TestDelayOnceTimeout(t *testing.T) {
+	d := NewDelayOnce(time.Second*2, time.Second*5, true)
+	ctx := context.TODO()
+	wg := sync.WaitGroup{}
+	for i := 0; i < 10; i++ {
+		log.Println(`Trigger key_timeout`)
+		isNew := d.DoWithState(ctx, `key_timeout`, func(isAbort func() bool) error {
+			defer wg.Done()
+			for i := 0; i < 4; i++ {
+				if isAbort() {
+					log.Println(`------> Stop key_timeout`)
+					return nil
+				}
+				log.Println(`Execute key_timeout`, i)
+				time.Sleep(time.Second * 5)
+			}
+			log.Println(`Execute key_timeout`)
+			return nil
+		})
+		if isNew {
+			wg.Add(1)
+		}
+		time.Sleep(time.Second * 6)
 	}
 	wg.Wait()
 }
