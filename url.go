@@ -54,17 +54,18 @@ func Base64Decode(str string) (string, error) {
 	return string(s), e
 }
 
+var urlSafeBase64EncodeReplacer = strings.NewReplacer(`/`, `_`, `+`, `-`)
+var urlSafeBase64DecodeReplacer = strings.NewReplacer(`_`, `/`, `-`, `+`)
+
 // URLSafeBase64 base64字符串编码为URL友好的字符串
 func URLSafeBase64(str string, encode bool) string {
 	if encode { // 编码后处理
 		str = strings.TrimRight(str, `=`)
-		str = strings.Replace(str, `/`, `_`, -1)
-		str = strings.Replace(str, `+`, `-`, -1)
+		str = urlSafeBase64EncodeReplacer.Replace(str)
 		return str
 	}
 	// 解码前处理
-	str = strings.Replace(str, `_`, `/`, -1)
-	str = strings.Replace(str, `-`, `+`, -1)
+	str = urlSafeBase64DecodeReplacer.Replace(str)
 	var missing = (4 - len(str)%4) % 4
 	if missing > 0 {
 		str += strings.Repeat(`=`, missing)
