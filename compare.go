@@ -15,13 +15,9 @@
 package com
 
 import (
-	"regexp"
+	"log"
 
 	"github.com/hashicorp/go-version"
-)
-
-var (
-	regexpNotNumber = regexp.MustCompile(`[^0-9]+`)
 )
 
 const (
@@ -52,7 +48,11 @@ func SemVerCompare(a, b string) (int, error) {
 // @param  {string} b     version string
 // @return {int}          1 = a is higher, 0 = equal, -1 = b is higher
 func VersionCompare(a, b string) (ret int) {
-	ret, _ = SemVerCompare(a, b)
+	var err error
+	ret, err = SemVerCompare(a, b)
+	if err != nil {
+		log.Printf(`failed to VersionCompare(%q, %q): %v`, a, b, err)
+	}
 	return
 }
 
