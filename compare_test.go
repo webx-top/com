@@ -27,10 +27,10 @@ func TestVersionCompare(t *testing.T) {
 		t.Error(`Error: 6.1 >= 6.1.1`)
 	}
 	if VersionCompare(`6.1.0`, `6.1.0-alpha`) != VersionCompareGt {
-		t.Error(`Error: 6.1.0 <= 6.1.1`)
+		t.Error(`Error: 6.1.0 <= 6.1.0-alpha`)
 	}
 	if VersionCompare(`6.1.0-beta`, `6.1.0-alpha`) != VersionCompareGt {
-		t.Error(`Error: 6.1.0-beta <= 6.1.1`)
+		t.Error(`Error: 6.1.0-beta <= 6.1.0-alpha`)
 	}
 	if VersionCompare(`6.1.0-beta`, `6.1.0-beta`) != VersionCompareEq {
 		t.Error(`Error: 6.1.0-beta != 6.1.0-beta`)
