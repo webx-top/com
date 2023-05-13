@@ -17,6 +17,7 @@ func TestSlashes(t *testing.T) {
 	assert.Equal(t, `webx'top\`, StripSlashes(`webx\'top\\`))
 	assert.Equal(t, `webx\\\'top\\\\`, AddSlashes(`webx\'top\\`))
 	assert.Equal(t, `webx\'top\\`, StripSlashes(`webx\\\'top\\\\`))
+	assert.Equal(t, `webx'top'`, StripSlashes(`webx\'top\'`))
 	s := `webx
 eee
 	www	www2
