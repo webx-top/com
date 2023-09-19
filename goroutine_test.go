@@ -25,6 +25,7 @@ func TestLoop(t *testing.T) {
 
 func TestDelayOnceNormal(t *testing.T) {
 	d := NewDelayOnce(time.Second*2, time.Hour, true)
+	defer d.Close()
 	ctx := context.TODO()
 	wg := sync.WaitGroup{}
 	var lastTime time.Time
@@ -53,6 +54,7 @@ func TestDelayOnceNormal(t *testing.T) {
 
 func TestDelayOnceTimeout(t *testing.T) {
 	d := NewDelayOnce(time.Second*2, time.Second*5, true)
+	defer d.Close()
 	ctx := context.TODO()
 	wg := sync.WaitGroup{}
 	var lastTime time.Time
