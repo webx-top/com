@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/webx-top/com"
@@ -33,13 +32,13 @@ func main() {
 
 	os.Mkdir(`testdata/aa`, os.ModePerm)
 
-	ioutil.WriteFile(`testdata/aa/a.log`, []byte(`test`), 0666)
+	os.WriteFile(`testdata/aa/a.log`, []byte(`test`), 0666)
 
 	os.Chmod(`testdata/aa/a.log`, os.ModePerm)
 
 	os.Mkdir(`testdata/bb`, os.ModePerm)
 
-	ioutil.WriteFile(`testdata/bb/b.log`, []byte(`test`), 0666)
+	os.WriteFile(`testdata/bb/b.log`, []byte(`test`), 0666)
 
 	os.Rename(`testdata/bb/b.log`, `testdata/bb/bb.log`)
 	<-make(chan int)

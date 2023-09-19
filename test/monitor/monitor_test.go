@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -87,7 +86,7 @@ func TestMonitor(t *testing.T) {
 
 	fmt.Println(``)
 	fmt.Println(`WRITE: ` + testDataDir + `/aa/a.log`)
-	err = ioutil.WriteFile(testDataDir+`/aa/a.log`, []byte(`test`), 0666)
+	err = os.WriteFile(testDataDir+`/aa/a.log`, []byte(`test`), 0666)
 	if err != nil {
 		panic(err)
 	}
@@ -120,7 +119,7 @@ func TestMonitor(t *testing.T) {
 
 	fmt.Println(``)
 	fmt.Println(`WRITE: ` + testDataDir + `/bb/b.log`)
-	ioutil.WriteFile(testDataDir+`/bb/b.log`, []byte(`test`), 0666)
+	os.WriteFile(testDataDir+`/bb/b.log`, []byte(`test`), 0666)
 	time.Sleep(time.Second * 2)
 	s = w.String()
 	if !strings.HasSuffix(strings.TrimSpace(s), `: CREATE`) {
