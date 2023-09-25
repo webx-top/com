@@ -175,6 +175,14 @@ func ParseArgs(command string) (params []string) {
 	return
 }
 
+func ParseEnvVar(v string) string {
+	return envOS.ReplaceAllStringFunc(v, getEnv)
+}
+
+func ParseWindowsEnvVar(v string) string {
+	return envWin.ReplaceAllStringFunc(v, getWinEnv)
+}
+
 func getWinEnv(s string) string {
 	s = strings.TrimPrefix(s, `{%`)
 	s = strings.TrimSuffix(s, `%}`)
