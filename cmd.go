@@ -167,8 +167,8 @@ func ParseArgs(command string) (params []string) {
 		params = append(params, string(item))
 	}
 	for k, v := range params {
-		v = envWin.ReplaceAllStringFunc(v, getWinEnv)
-		params[k] = envOS.ReplaceAllStringFunc(v, getEnv)
+		v = ParseWindowsEnvVar(v)
+		params[k] = ParseEnvVar(v)
 	}
 	//fmt.Printf("---> %#v\n", params)
 	//params = []string{}
@@ -199,14 +199,14 @@ type CmdResultCapturer struct {
 	Do func([]byte) error
 }
 
-func (this CmdResultCapturer) Write(p []byte) (n int, err error) {
-	err = this.Do(p)
+func (c CmdResultCapturer) Write(p []byte) (n int, err error) {
+	err = c.Do(p)
 	n = len(p)
 	return
 }
 
-func (this CmdResultCapturer) WriteString(p string) (n int, err error) {
-	err = this.Do([]byte(p))
+func (c CmdResultCapturer) WriteString(p string) (n int, err error) {
+	err = c.Do([]byte(p))
 	n = len(p)
 	return
 }
