@@ -250,35 +250,20 @@ func (c *CmdChanReader) Close() {
 }
 
 func (c *CmdChanReader) Send(b []byte) *CmdChanReader {
-	c.sendWithTimeout(bytes.NewReader(b))
-	return c
+	return c.SendReader(bytes.NewReader(b))
 }
 
-func (c *CmdChanReader) sendWithTimeout(r io.Reader) {
-	go func() {
-		t := time.NewTicker(c.timeout)
-		defer t.Stop()
-		for {
-			select {
-			case c.ch <- r:
-				if c.debug {
-					println(`CmdChanReader Chan has been sent`)
-				}
-				return
-			case <-t.C:
-				if c.debug {
-					println(`CmdChanReader Chan has timed out`)
-				}
-				c.Close()
-				return
-			}
-		}
-	}()
+func (c *CmdChanReader) SendReader(r io.Reader) *CmdChanReader {
+	defer recover()
+	select {
+	case c.ch <- r:
+	default:
+	}
+	return c
 }
 
 func (c *CmdChanReader) SendString(s string) *CmdChanReader {
-	c.sendWithTimeout(strings.NewReader(s))
-	return c
+	return c.SendReader(strings.NewReader(s))
 }
 
 func NewCmdStartResultCapturer(writer io.Writer, duration time.Duration) *CmdStartResultCapturer {
@@ -297,19 +282,19 @@ type CmdStartResultCapturer struct {
 	buffer   *bytes.Buffer
 }
 
-func (this CmdStartResultCapturer) Write(p []byte) (n int, err error) {
-	if time.Now().Sub(this.started) < this.duration {
-		this.buffer.Write(p)
+func (c *CmdStartResultCapturer) Write(p []byte) (n int, err error) {
+	if time.Since(c.started) < c.duration {
+		c.buffer.Write(p)
 	}
-	return this.writer.Write(p)
+	return c.writer.Write(p)
 }
 
-func (this CmdStartResultCapturer) Buffer() *bytes.Buffer {
-	return this.buffer
+func (c *CmdStartResultCapturer) Buffer() *bytes.Buffer {
+	return c.buffer
 }
 
-func (this CmdStartResultCapturer) Writer() io.Writer {
-	return this.writer
+func (c *CmdStartResultCapturer) Writer() io.Writer {
+	return c.writer
 }
 
 func CreateCmdStr(command string, recvResult func([]byte) error) *exec.Cmd {
