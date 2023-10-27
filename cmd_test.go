@@ -15,12 +15,16 @@ func TestParseEnvVar(t *testing.T) {
 	os.Setenv(`TESTENV`, `1`)
 	v := ParseEnvVar(`ab{$TESTENV}c`)
 	assert.Equal(t, `ab1c`, v)
+	v = ParseEnvVar(`ab{$NOTEXISTS:ok}c`)
+	assert.Equal(t, `abokc`, v)
 }
 
 func TestParseWindowsEnvVar(t *testing.T) {
 	os.Setenv(`TESTENV`, `2`)
 	v := ParseWindowsEnvVar(`ab{%TESTENV%}c`)
 	assert.Equal(t, `ab2c`, v)
+	v = ParseWindowsEnvVar(`ab{%NOTEXISTS:ok%}c`)
+	assert.Equal(t, `abokc`, v)
 }
 
 func TestCmdChanReader(t *testing.T) {
