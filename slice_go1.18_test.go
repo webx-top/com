@@ -16,3 +16,11 @@ func TestSliceExtractCallback(t *testing.T) {
 	assert.Equal(t, 2, n2N)
 	assert.Equal(t, 3, n3N)
 }
+
+func TestReverseSortIndex(t *testing.T) {
+	parts := []string{`1`, `2`, `3`}
+	ReverseSortIndex(parts)
+	assert.Equal(t, `3`, parts[0])
+	assert.Equal(t, `2`, parts[1])
+	assert.Equal(t, `1`, parts[2])
+}
