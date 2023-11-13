@@ -604,9 +604,9 @@ func SplitKVRowsCallback(rows string, callback func(k, v string) error, seperato
 }
 
 func TrimSpaceForRows(rows string) []string {
-	rows := strings.Split(rows, StrLF)
-	res := make([]string, 0, len(rows))
-	for _, row := range rows {
+	rowSlice := strings.Split(rows, StrLF)
+	res := make([]string, 0, len(rowSlice))
+	for _, row := range rowSlice {
 		row = strings.TrimSpace(row)
 		if len(row) == 0 {
 			continue
