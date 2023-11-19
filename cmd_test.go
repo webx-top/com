@@ -11,6 +11,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestParseArgs(t *testing.T) {
+	parts := ParseArgs(`tower.exe -c tower.yaml -p "eee\"ddd" -t aaaa`)
+	expected := []string{"tower.exe", "-c", "tower.yaml", "-p", "eee\"ddd", "-t", "aaaa"}
+	assert.Equal(t, expected, parts)
+
+	parts = ParseArgs(`tower.exe -c    tower.yaml -p "eee\"ddd" -t aaaa`) // more space
+	assert.Equal(t, expected, parts)
+
+	parts = ParseArgs(`tower.exe -c=tower.yaml -p="eee\"ddd" -t=aaaa`)
+	assert.Equal(t, expected, parts)
+	parts = ParseArgs(`tower.exe -c=tower.yaml -p='eee"ddd' -t=aaaa`)
+	assert.Equal(t, expected, parts)
+
+	parts = ParseArgs(`tower.exe -c	  	tower.yaml 		-p 	"eee\"ddd" 	-t 	aaaa`) // space and tab
+	assert.Equal(t, expected, parts)
+
+	parts = ParseArgs(`tower.exe -c tower.yaml -p   'eee\'ddd' -t aaaa`)
+	assert.Equal(t, []string{"tower.exe", "-c", "tower.yaml", "-p", "eee'ddd", "-t", "aaaa"}, parts)
+	parts = ParseArgs(`tower.exe -c tower.yaml -p   '	eee\'ddd ' -t aaaa`)
+	assert.Equal(t, []string{"tower.exe", "-c", "tower.yaml", "-p", "	eee'ddd ", "-t", "aaaa"}, parts)
+}
+
+func TestParseFields(t *testing.T) {
+	parts := ParseFields(`drwxr-xr-x   1 root root    0 2023-11-19 04:18 'test test2'`)
+	expected := []string{"drwxr-xr-x", "1", "root", "root", "0", "2023-11-19", "04:18", "test test2"}
+	assert.Equal(t, expected, parts)
+}
+
 func TestParseEnvVar(t *testing.T) {
 	os.Setenv(`TESTENV`, `1`)
 	v := ParseEnvVar(`ab{$TESTENV}c`)
