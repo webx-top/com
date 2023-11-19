@@ -103,10 +103,45 @@ func BaseFileName(ppath string) string {
 			if i+1 < len(ppath) {
 				return ppath[i+1:]
 			}
-			return BaseFileName(ppath[0:i])
+			return ``
 		}
 	}
 	return ppath
+}
+
+func HasPathSeperatorPrefix(ppath string) bool {
+	return strings.HasPrefix(ppath, `/`) || strings.HasPrefix(ppath, `\`)
+}
+
+func HasPathSeperatorSuffix(ppath string) bool {
+	return strings.HasSuffix(ppath, `/`) || strings.HasSuffix(ppath, `\`)
+}
+
+var pathSeperatorRegex = regexp.MustCompile(`(\\|/)`)
+
+func GetPathSeperator(ppath string) string {
+	matches := pathSeperatorRegex.FindAllStringSubmatch(ppath, 1)
+	if len(matches) > 0 && len(matches[0]) > 1 {
+		return matches[0][1]
+	}
+	return ``
+}
+
+func SplitFileDirAndName(ppath string) (dir string, name string) {
+	if len(ppath) == 0 {
+		return
+	}
+	for i := len(ppath) - 1; i >= 0; i-- {
+		if ppath[i] == '/' || ppath[i] == '\\' {
+			if i+1 < len(ppath) {
+				return ppath[0:i], ppath[i+1:]
+			}
+			dir = ppath[0:i]
+			return
+		}
+	}
+	name = ppath
+	return
 }
 
 // FileSize returns file size in bytes and possible error.

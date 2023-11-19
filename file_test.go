@@ -50,7 +50,28 @@ func TestBaseFileName(t *testing.T) {
 	r = BaseFileName(`abc\dd.txt`)
 	assert.Equal(t, `dd.txt`, r)
 	r = BaseFileName(`abc\dd.txt/`)
-	assert.Equal(t, `dd.txt`, r)
+	assert.Equal(t, ``, r)
 	r = BaseFileName(`/`)
 	assert.Equal(t, ``, r)
+	r = BaseFileName(`dd.txt`)
+	assert.Equal(t, `dd.txt`, r)
+}
+
+func TestSplitFileDirAndName(t *testing.T) {
+	dir, name := SplitFileDirAndName(`abc/dd.txt`)
+	assert.Equal(t, `abc`, dir)
+	assert.Equal(t, `dd.txt`, name)
+
+	dir, name = SplitFileDirAndName(`dd.txt`)
+	assert.Equal(t, ``, dir)
+	assert.Equal(t, `dd.txt`, name)
+
+	dir, name = SplitFileDirAndName(`abc/`)
+	assert.Equal(t, `abc`, dir)
+	assert.Equal(t, ``, name)
+
+	sep := GetPathSeperator(`dfefe/ffefe`)
+	assert.Equal(t, `/`, sep)
+	sep = GetPathSeperator(`dfefe\ffefe`)
+	assert.Equal(t, `\`, sep)
 }
