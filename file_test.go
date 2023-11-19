@@ -43,3 +43,14 @@ func TestFileIsCompleted(t *testing.T) {
 
 	wg.Wait()
 }
+
+func TestBaseFileName(t *testing.T) {
+	r := BaseFileName(`abc/dd.txt`)
+	assert.Equal(t, `dd.txt`, r)
+	r = BaseFileName(`abc\dd.txt`)
+	assert.Equal(t, `dd.txt`, r)
+	r = BaseFileName(`abc\dd.txt/`)
+	assert.Equal(t, `dd.txt`, r)
+	r = BaseFileName(`/`)
+	assert.Equal(t, ``, r)
+}

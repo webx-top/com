@@ -94,6 +94,21 @@ func TrimFileName(ppath string) string {
 	return ``
 }
 
+func BaseFileName(ppath string) string {
+	if len(ppath) == 0 {
+		return ppath
+	}
+	for i := len(ppath) - 1; i >= 0; i-- {
+		if ppath[i] == '/' || ppath[i] == '\\' {
+			if i+1 < len(ppath) {
+				return ppath[i+1:]
+			}
+			return BaseFileName(ppath[0:i])
+		}
+	}
+	return ppath
+}
+
 // FileSize returns file size in bytes and possible error.
 func FileSize(file string) (int64, error) {
 	f, err := os.Stat(file)
