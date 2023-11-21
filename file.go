@@ -118,6 +118,7 @@ func HasPathSeperatorSuffix(ppath string) bool {
 }
 
 var pathSeperatorRegex = regexp.MustCompile(`(\\|/)`)
+var winPathSeperatorRegex = regexp.MustCompile(`[\\]+`)
 
 func GetPathSeperator(ppath string) string {
 	matches := pathSeperatorRegex.FindAllStringSubmatch(ppath, 1)
@@ -125,6 +126,53 @@ func GetPathSeperator(ppath string) string {
 		return matches[0][1]
 	}
 	return ``
+}
+
+func RealPath(fullPath string) string {
+	if len(fullPath) == 0 {
+		return fullPath
+	}
+	var root string
+	var pathSeperator string
+	if strings.HasPrefix(fullPath, `/`) {
+		pathSeperator = `/`
+	} else {
+		pathSeperator = GetPathSeperator(fullPath)
+		if pathSeperator == `/` {
+			fullPath = `/` + fullPath
+		} else {
+			cleanedFullPath := winPathSeperatorRegex.ReplaceAllString(fullPath, `\`)
+			parts := strings.SplitN(cleanedFullPath, `\`, 2)
+			if !strings.HasSuffix(parts[0], `:`) {
+				if len(parts[0]) > 0 {
+					parts[0] = `c:\` + parts[0]
+				} else {
+					parts[0] = `c:`
+				}
+			}
+			root = parts[0] + `\`
+			if len(parts) != 2 {
+				return fullPath
+			}
+			fullPath = parts[1]
+		}
+	}
+	parts := pathSeperatorRegex.Split(fullPath, -1)
+	result := make([]string, 0, len(parts))
+	for _, part := range parts {
+		if part == `.` {
+			continue
+		}
+		if part == `..` {
+			if len(result) <= 1 {
+				continue
+			}
+			result = result[0 : len(result)-1]
+			continue
+		}
+		result = append(result, part)
+	}
+	return root + strings.Join(result, pathSeperator)
 }
 
 func SplitFileDirAndName(ppath string) (dir string, name string) {

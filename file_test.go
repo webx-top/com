@@ -75,3 +75,26 @@ func TestSplitFileDirAndName(t *testing.T) {
 	sep = GetPathSeperator(`dfefe\ffefe`)
 	assert.Equal(t, `\`, sep)
 }
+
+func TestRealPath(t *testing.T) {
+	ppath := RealPath(`/abc/../dd.txt`)
+	assert.Equal(t, `/dd.txt`, ppath)
+
+	ppath = RealPath(`/../dd.txt`)
+	assert.Equal(t, `/dd.txt`, ppath)
+
+	ppath = RealPath(`c:\..\dd.txt`)
+	assert.Equal(t, `c:\dd.txt`, ppath)
+	ppath = RealPath(`c:\\..\\dd.txt`)
+	assert.Equal(t, `c:\dd.txt`, ppath)
+
+	ppath = RealPath(`\\dd.txt`)
+	assert.Equal(t, `c:\dd.txt`, ppath)
+	ppath = RealPath(`a\b\dd.txt`)
+	assert.Equal(t, `c:\a\b\dd.txt`, ppath)
+	ppath = RealPath(`dd.txt`)
+	assert.Equal(t, `dd.txt`, ppath)
+
+	ppath = RealPath(`c:\a\b\c\..`)
+	assert.Equal(t, `c:\a\b`, ppath)
+}
