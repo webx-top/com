@@ -25,6 +25,7 @@ func main() {
 				input, _ := in.ReadString(com.LF)
 				if input == com.StrLF || input == com.StrCRLF {
 					color.Green(`[process] restart ==> ` + com.NowStr())
+					//panic(`[panic]`)
 				} else {
 					color.Blue(`[process] waiting ==> ` + com.NowStr())
 				}
