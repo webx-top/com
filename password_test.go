@@ -29,7 +29,25 @@ func TestMakePassword(t *testing.T) {
 	}
 	salt = `github.com/webx-top/com`
 	dk := PBKDF2Key([]byte("some password"), []byte(salt), 4096, 32, sha1.New)
-	fmt.Println(`PBKDF2:`, string(dk))
+	fmt.Println(`PBKDF2:`, string(dk), len(dk))
+
+	hashedPassword, err := BCryptMakePassword(`github.com/webx-top/com`)
+	assert.NoError(t, err)
+	fmt.Println(`BCrypt:`, string(hashedPassword), len(hashedPassword)) // $2a$10$7eI1PPyMbvY5E6g6IeOh.OunLNMrguV/tL.mK9HZIUf//iBZ49nW6
+	err = BCryptCheckPassword(string(hashedPassword), `github.com/webx-top/com`)
+	assert.NoError(t, err)
+
+	hashed, err = Argon2MakePassword(`github.com/webx-top/com`, Salt())
+	assert.NoError(t, err)
+	fmt.Println(`Argon2:`, hashed, len(hashed))
+	err = Argon2CheckPassword(hashed, `github.com/webx-top/com`)
+	assert.NoError(t, err)
+
+	hashed, err = Argon2MakePassword(`github.com/webx-top/com`)
+	assert.NoError(t, err)
+	fmt.Println(`Argon2:`, hashed, len(hashed))
+	err = Argon2CheckPassword(hashed, `github.com/webx-top/com`)
+	assert.NoError(t, err)
 }
 
 func TestAbsURL(t *testing.T) {

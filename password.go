@@ -21,7 +21,17 @@ package com
 import (
 	"crypto/hmac"
 	"crypto/sha1"
+	"crypto/subtle"
+	"encoding/base64"
+	"errors"
+	"fmt"
 	"hash"
+	"runtime"
+	"strconv"
+	"strings"
+
+	"golang.org/x/crypto/argon2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Hash 生成哈希值
@@ -85,6 +95,100 @@ func CheckPassword(rawPassword string, hashedPassword string, salt string, posit
 	return MakePassword(rawPassword, salt, positions...) == hashedPassword
 }
 
+// BCryptMakePassword 创建密码(生成60个字符)
+func BCryptMakePassword(password string) ([]byte, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return hash, err
+}
+
+// BCryptCheckPassword 检查密码
+func BCryptCheckPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+const (
+	argon2Type   = "argon2id"
+	argon2KeyLen = 32
+	argon2Time   = 1
+	argon2Memory = 64 * 1024
+)
+
+var (
+	argon2Threads          = uint8(runtime.NumCPU())
+	ErrPasswordLength0     = errors.New("password length cannot be 0")
+	ErrInvalidPasswordHash = errors.New("invalid password hash")
+	ErrPasswordMismatch    = errors.New("password did not match")
+)
+
+// Argon2MakePassword takes a plaintext password and generates an argon2 hash
+func Argon2MakePassword(password string, salt ...string) (string, error) {
+	if len(password) == 0 {
+		return "", ErrPasswordLength0
+	}
+	var _salt string
+	if len(salt) > 0 && len(salt[0]) > 0 {
+		_salt = salt[0]
+	} else {
+		_salt = RandStr(32)
+		_salt = base64.StdEncoding.EncodeToString([]byte(_salt))
+	}
+	unencodedPassword := argon2.IDKey([]byte(password), []byte(_salt), argon2Time, argon2Memory, argon2Threads, argon2KeyLen)
+	encodedPassword := base64.StdEncoding.EncodeToString(unencodedPassword)
+	hash := fmt.Sprintf("%s$%d$%d$%d$%d$%s$%s",
+		argon2Type, argon2Time, argon2Memory, argon2Threads, argon2KeyLen, _salt, encodedPassword)
+
+	return hash, nil
+}
+
+// Argon2CheckPassword compares an argon2 hash against plaintext password
+func Argon2CheckPassword(hash, password string) error {
+	if len(hash) == 0 || len(password) == 0 {
+		return ErrPasswordLength0
+	}
+	hashParts := strings.SplitN(hash, "$", 7) // <passwordType>$<time>$<memory>$<threads>$<keyLen>$<salt>$<hash>
+	if len(hashParts) != 7 {
+		return ErrInvalidPasswordHash
+	}
+
+	passwordType := hashParts[0]
+	time, err := strconv.ParseInt(hashParts[1], 10, 32)
+	if err != nil {
+		return err
+	}
+	memory, err := strconv.ParseInt(hashParts[2], 10, 32)
+	if err != nil {
+		return err
+	}
+	threads, err := strconv.ParseInt(hashParts[3], 10, 8)
+	if err != nil {
+		return err
+	}
+	keyLen, err := strconv.ParseInt(hashParts[4], 10, 32)
+	if err != nil {
+		return err
+	}
+	salt := []byte(hashParts[5])
+	key, err := base64.StdEncoding.DecodeString(hashParts[6])
+	if err != nil {
+		return err
+	}
+
+	var calculatedKey []byte
+	switch passwordType {
+	case "argon2id":
+		calculatedKey = argon2.IDKey([]byte(password), salt, uint32(time), uint32(memory), uint8(threads), uint32(keyLen))
+	case "argon2i", "argon2":
+		calculatedKey = argon2.Key([]byte(password), salt, uint32(time), uint32(memory), uint8(threads), uint32(keyLen))
+	default:
+		return ErrInvalidPasswordHash
+	}
+
+	if subtle.ConstantTimeCompare(key, calculatedKey) != 1 {
+		return ErrPasswordMismatch
+	}
+	return nil
+}
+
 // PBKDF2Key derives a key from the password, salt and iteration count, returning a
 // []byte of length keylen that can be used as cryptographic key. The key is
 // derived based on the method described as PBKDF2 with the HMAC variant using
@@ -94,7 +198,7 @@ func CheckPassword(rawPassword string, hashedPassword string, salt string, posit
 // can get a derived key for e.g. AES-256 (which needs a 32-byte key) by
 // doing:
 //
-// 	dk := pbkdf2.Key([]byte("some password"), salt, 4096, 32, sha1.New)
+//	dk := pbkdf2.Key([]byte("some password"), salt, 4096, 32, sha1.New)
 //
 // Remember to get a good random salt. At least 8 bytes is recommended by the
 // RFC.
