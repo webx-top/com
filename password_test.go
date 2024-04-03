@@ -37,12 +37,22 @@ func TestMakePassword(t *testing.T) {
 	err = BCryptCheckPassword(string(hashedPassword), `github.com/webx-top/com`)
 	assert.NoError(t, err)
 
+	hashed, err = Argon2MakePasswordShortly(`github.com/webx-top/com`, Salt())
+	assert.NoError(t, err)
+	fmt.Println(`Argon2Shortly:`, hashed, len(hashed))
+	err = Argon2CheckPassword(hashed, `github.com/webx-top/com`)
+	assert.NoError(t, err)
+	hashed, err = Argon2MakePasswordShortly(`github.com/webx-top/com`)
+	assert.NoError(t, err)
+	fmt.Println(`Argon2Shortly:`, hashed, len(hashed))
+	err = Argon2CheckPassword(hashed, `github.com/webx-top/com`)
+	assert.NoError(t, err)
+
 	hashed, err = Argon2MakePassword(`github.com/webx-top/com`, Salt())
 	assert.NoError(t, err)
 	fmt.Println(`Argon2:`, hashed, len(hashed))
 	err = Argon2CheckPassword(hashed, `github.com/webx-top/com`)
 	assert.NoError(t, err)
-
 	hashed, err = Argon2MakePassword(`github.com/webx-top/com`)
 	assert.NoError(t, err)
 	fmt.Println(`Argon2:`, hashed, len(hashed))
