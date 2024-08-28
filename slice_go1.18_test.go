@@ -25,10 +25,10 @@ func TestReverseSortIndex(t *testing.T) {
 	assert.Equal(t, `1`, parts[2])
 }
 
-func TestSliceChunk(t *testing.T) {
+func TestChunkSlicex(t *testing.T) {
 	parts := []string{`1`, `2`, `3`}
 	assert.Equal(t, [][]string{
 		{`1`, `2`},
 		{`3`},
-	}, SliceChunk(parts, 2))
+	}, ChunkSlicex(parts, 2))
 }

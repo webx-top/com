@@ -38,7 +38,7 @@ func ReverseSortIndex[T any](values []T) []T {
 	return values
 }
 
-func SliceChunk[T any](slice []T, size int) (chunkslice [][]T) {
+func ChunkSlicex[T any](slice []T, size int) (chunkslice [][]T) {
 	length := len(slice)
 	if size >= length {
 		chunkslice = append(chunkslice, slice)

@@ -347,7 +347,7 @@ func SliceIntersect(slice1, slice2 []interface{}) (diffslice []interface{}) {
 	return
 }
 
-func SliceChunkIface(slice []interface{}, size int) (chunkslice [][]interface{}) {
+func SliceChunk(slice []interface{}, size int) (chunkslice [][]interface{}) {
 	length := len(slice)
 	if size >= length {
 		chunkslice = append(chunkslice, slice)
