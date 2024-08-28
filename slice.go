@@ -78,10 +78,7 @@ func CompareSliceStrU(s1, s2 []string) bool {
 			}
 		}
 	}
-	if len(s2) > 0 {
-		return false
-	}
-	return true
+	return len(s2) == 0
 }
 
 // IsSliceContainsStr returns true if the string exists in given slice.
@@ -338,10 +335,10 @@ func Int64SliceDiff(slice1, slice2 []int64) (diffslice []int64) {
 	return
 }
 
-func SliceIntersect(slice1, slice2 []interface{}) (diffslice []interface{}) {
+func SliceIntersect(slice1, slice2 []interface{}) (inslice []interface{}) {
 	for _, v := range slice1 {
-		if !InSliceIface(v, slice2) {
-			diffslice = append(diffslice, v)
+		if InSliceIface(v, slice2) {
+			inslice = append(inslice, v)
 		}
 	}
 	return

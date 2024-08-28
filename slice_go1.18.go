@@ -2,7 +2,10 @@
 
 package com
 
-import "sort"
+import (
+	"math/rand"
+	"sort"
+)
 
 type Number interface {
 	~uint8 | ~int8 | ~uint16 | ~int16 | ~uint32 | ~int32 | ~uint | ~int | ~uint64 | ~int64 | ~float32 | ~float64
@@ -63,4 +66,40 @@ func InSlicex[T comparable](v T, sl []T) bool {
 		}
 	}
 	return false
+}
+
+func IntersectSlicex[T comparable](slice1, slice2 []T) (inslice []T) {
+	for _, v := range slice1 {
+		if InSlicex(v, slice2) {
+			inslice = append(inslice, v)
+		}
+	}
+	return
+}
+
+func DiffSlicex[T comparable](slice1, slice2 []T) (diffslice []T) {
+	for _, v := range slice1 {
+		if !InSlicex(v, slice2) {
+			diffslice = append(diffslice, v)
+		}
+	}
+	return
+}
+
+func MergeSlicex[T any](slice1, slice2 []T) (c []T) {
+	c = append(slice1, slice2...)
+	return
+}
+
+func ReduceSlicex[T any](slice []T, a func(T) T) (dslice []T) {
+	for _, v := range slice {
+		dslice = append(dslice, a(v))
+	}
+	return
+}
+
+func RandSlicex[T any](a []T) (b T) {
+	randnum := rand.Intn(len(a))
+	b = a[randnum]
+	return
 }
