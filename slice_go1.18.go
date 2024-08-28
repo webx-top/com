@@ -37,3 +37,30 @@ func ReverseSortIndex[T any](values []T) []T {
 	sort.Sort(reverseSortIndex[T](values))
 	return values
 }
+
+func SliceChunk[T any](slice []T, size int) (chunkslice [][]T) {
+	length := len(slice)
+	if size >= length {
+		chunkslice = append(chunkslice, slice)
+		return
+	}
+	end := size
+	for i := 0; i < length; i += size {
+		if end < length {
+			chunkslice = append(chunkslice, slice[i:end])
+		} else {
+			chunkslice = append(chunkslice, slice[i:])
+		}
+		end += size
+	}
+	return
+}
+
+func InSlicex[T comparable](v T, sl []T) bool {
+	for _, vv := range sl {
+		if vv == v {
+			return true
+		}
+	}
+	return false
+}
