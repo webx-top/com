@@ -32,3 +32,7 @@ func TestChunkSlicex(t *testing.T) {
 		{`3`},
 	}, ChunkSlicex(parts, 2))
 }
+
+func TestJoinNumbers(t *testing.T) {
+	assert.Equal(t, `1,2,3`, JoinNumbers([]uint{1, 2, 3}, `,`))
+}

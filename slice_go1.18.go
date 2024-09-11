@@ -5,6 +5,7 @@ package com
 import (
 	"math/rand"
 	"sort"
+	"strings"
 )
 
 type Number interface {
@@ -102,4 +103,15 @@ func RandSlicex[T any](a []T) (b T) {
 	randnum := rand.Intn(len(a))
 	b = a[randnum]
 	return
+}
+
+func JoinNumbers[T Number](slice []T, sep string) string {
+	sb := strings.Builder{}
+	for i, v := range slice {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.WriteString(Str(v))
+	}
+	return sb.String()
 }
