@@ -619,3 +619,21 @@ func CleanSpaceLine(b []byte) []byte {
 func CleanSpaceLineString(b string) string {
 	return reSpaceLine.ReplaceAllString(b, BreakLineString)
 }
+
+func ContainsWord(src string, word string) bool {
+	if src == word {
+		return true
+	}
+	l := len(word)
+	if strings.HasPrefix(src, word) && !IsAlpha(rune(src[l])) {
+		return true
+	}
+	if strings.HasSuffix(src, word) && !IsAlpha(rune(src[len(src)-l-1])) {
+		return true
+	}
+	re, err := regexp.Compile(`\b` + regexp.QuoteMeta(word) + `\b`)
+	if err != nil {
+		return false
+	}
+	return re.MatchString(src)
+}

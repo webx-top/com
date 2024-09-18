@@ -41,3 +41,16 @@ func TestTitle(t *testing.T) {
 	v = Title(`nick_name`)
 	assert.Equal(t, `Nick_name`, v)
 }
+
+func TestContainsWord(t *testing.T) {
+	v := ContainsWord(`application/x-apple-diskimage`, `image`)
+	assert.False(t, v)
+	v = ContainsWord(`image/jpg`, `image`)
+	assert.True(t, v)
+	v = ContainsWord(`imagejpg`, `image`)
+	assert.False(t, v)
+	v = ContainsWord(`abc/image/jpg`, `image`)
+	assert.True(t, v)
+	v = ContainsWord(`abc/imagejpg`, `image`)
+	assert.False(t, v)
+}
