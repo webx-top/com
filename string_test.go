@@ -49,6 +49,8 @@ func TestContainsWord(t *testing.T) {
 	assert.True(t, v)
 	v = ContainsWord(`imagejpg`, `image`)
 	assert.False(t, v)
+	v = ContainsWord(`abc/image`, `image`)
+	assert.True(t, v)
 	v = ContainsWord(`abc/image/jpg`, `image`)
 	assert.True(t, v)
 	v = ContainsWord(`abc/imagejpg`, `image`)
