@@ -11,6 +11,8 @@ import (
 )
 
 func main() {
+	args := com.ParseCmdArgs()
+	com.Dump(args)
 	ctx := context.Background()
 	// Listen to keypress of "return" and restart the app automatically
 	go func() {
