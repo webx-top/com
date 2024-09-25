@@ -88,3 +88,10 @@ func TestCmdChanReader(t *testing.T) {
 	c.SendStringAndWait("OK4\n")
 	wg.Wait()
 }
+
+func TestParseCmdArgs(t *testing.T) {
+	args := ParseCmdArgs(`c.exe`, `--a`, `b`)
+	assert.Equal(t, map[string]string{"a": "b"}, args)
+	args = ParseCmdArgs(`c.exe`, `--a`)
+	assert.Equal(t, map[string]string{"a": ""}, args)
+}

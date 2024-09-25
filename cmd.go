@@ -649,3 +649,28 @@ func CloseProcessFromCmd(cmd *exec.Cmd) error {
 func CmdIsRunning(cmd *exec.Cmd) bool {
 	return cmd != nil && cmd.ProcessState == nil
 }
+
+func ParseCmdArgs(inputArgs ...string) map[string]string {
+	if len(inputArgs) == 0 {
+		inputArgs = os.Args
+	}
+	if len(inputArgs) <= 1 {
+		return map[string]string{}
+	}
+	args := map[string]string{}
+	_inputArgs := inputArgs[1:]
+	maxi := len(_inputArgs) - 1
+	for idx, arg := range _inputArgs {
+		if !strings.HasPrefix(arg, `-`) {
+			continue
+		}
+		key := strings.TrimPrefix(arg, `-`)
+		key = strings.TrimPrefix(key, `-`)
+		if idx < maxi {
+			args[key] = _inputArgs[idx+1]
+		} else {
+			args[key] = ``
+		}
+	}
+	return args
+}
