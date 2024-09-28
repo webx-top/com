@@ -666,10 +666,15 @@ func ParseCmdArgs(inputArgs ...string) map[string]string {
 		}
 		key := strings.TrimPrefix(arg, `-`)
 		key = strings.TrimPrefix(key, `-`)
-		if idx < maxi {
-			args[key] = _inputArgs[idx+1]
+		parts := strings.SplitN(key, `=`, 2)
+		if len(parts) == 2 {
+			args[parts[0]] = parts[1]
 		} else {
-			args[key] = ``
+			if idx < maxi {
+				args[key] = _inputArgs[idx+1]
+			} else {
+				args[key] = ``
+			}
 		}
 	}
 	return args
