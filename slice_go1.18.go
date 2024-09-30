@@ -29,6 +29,19 @@ func SliceExtractCallback[T Scalar](parts []string, cb func(string) T, recv ...*
 	}
 }
 
+func ExtractSlicex[T any](parts []T, recv ...*T) {
+	recvEndIndex := len(recv) - 1
+	if recvEndIndex < 0 {
+		return
+	}
+	for index, value := range parts {
+		if index > recvEndIndex {
+			break
+		}
+		*recv[index] = value
+	}
+}
+
 type reverseSortIndex[T any] []T
 
 func (s reverseSortIndex[T]) Len() int { return len(s) }
