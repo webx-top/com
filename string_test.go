@@ -7,6 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSubstr(t *testing.T) {
+	assert.Equal(t, `web`, Substr(`webx_top`, ``, 3))
+	assert.Equal(t, `历史书`, Substr(`历史书籍`, ``, 3))
+}
+
 func TestTitleCase(t *testing.T) {
 	assert.Equal(t, `Webx_Top`, TitleCase(`webx_top`))
 	assert.Equal(t, `Webx Top`, TitleCase(`webx top`))
