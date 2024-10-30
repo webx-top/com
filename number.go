@@ -33,6 +33,20 @@ var chPowerNumMap = map[string]*chNumberLevel{
 		int64(math.Pow10(1)),
 		false,
 	},
+
+	// Upper
+	"仟": {
+		int64(math.Pow10(3)),
+		false,
+	},
+	"佰": {
+		int64(math.Pow10(2)),
+		false,
+	},
+	"拾": {
+		int64(math.Pow10(1)),
+		false,
+	},
 }
 
 // 数值对应表
@@ -47,6 +61,17 @@ var chToArNumberMap = map[string]int64{
 	"七": 7,
 	"八": 8,
 	"九": 9,
+
+	// Upper
+	"壹": 1,
+	"贰": 2,
+	"叁": 3,
+	"肆": 4,
+	"伍": 5,
+	"陆": 6,
+	"柒": 7,
+	"捌": 8,
+	"玖": 9,
 }
 
 // chPowerNumber 获取权位的信息

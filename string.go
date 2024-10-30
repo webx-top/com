@@ -176,10 +176,7 @@ func StrReplace(str string, find string, to string) string {
 // IsLetter returns true if the 'l' is an English letter.
 func IsLetter(l uint8) bool {
 	n := (l | 0x20) - 'a'
-	if n >= 0 && n < 26 {
-		return true
-	}
-	return false
+	return n >= 0 && n < 26
 }
 
 // Expand replaces {k} in template with match[k] or subs[atoi(k)] if k is not in match.
