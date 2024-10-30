@@ -61,3 +61,10 @@ func TestContainsWord(t *testing.T) {
 	v = ContainsWord(`abc/imagejpg`, `image`)
 	assert.False(t, v)
 }
+
+func TestMultipleBytesText(t *testing.T) {
+	s := `。，（）-1！@234567890abc１２３４５６７８９ａｂｃ`
+	v := ToSBText(s)
+	assert.Equal(t, `｡,()-1!@234567890abc123456789abc`, v)
+	assert.Equal(t, `。，（）－１！＠２３４５６７８９０ａｂｃ１２３４５６７８９ａｂｃ`, ToMBText(v))
+}

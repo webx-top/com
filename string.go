@@ -39,6 +39,7 @@ import (
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"golang.org/x/text/width"
 )
 
 func Str2bytes(s string) []byte {
@@ -636,4 +637,14 @@ func ContainsWord(src string, word string) bool {
 		return false
 	}
 	return re.MatchString(src)
+}
+
+// ToMBText 全角转半角
+func ToSBText(s string) string {
+	return width.Narrow.String(s)
+}
+
+// ToMBText 半角转全角
+func ToMBText(s string) string {
+	return width.Widen.String(s)
 }
