@@ -111,7 +111,7 @@ func ConvertNumberChToAr(inputStrNum string) (ansNum int64) {
 	return
 }
 
-var numMap = map[int]string{
+var numMap = map[int64]string{
 	0: "零", 1: "一", 2: "二", 3: "三", 4: "四",
 	5: "五", 6: "六", 7: "七", 8: "八", 9: "九",
 }
@@ -120,7 +120,7 @@ var unitMap = []string{"", "十", "百", "千"}
 var bigUnitMap = []string{"", "万", "亿"}
 
 // ConvertNumberArToCh 阿拉伯数字转中文数字
-func ConvertNumberArToCh(num int) string {
+func ConvertNumberArToCh(num int64) string {
 	if num == 0 {
 		return numMap[0]
 	}
@@ -135,7 +135,7 @@ func ConvertNumberArToCh(num int) string {
 				result = append([]string{numMap[0]}, result...)
 			}
 		} else {
-			partStr := convertPart(part)
+			partStr := convertArNumberPart(part)
 			result = append([]string{partStr + bigUnitMap[bigUnitIndex]}, result...)
 		}
 		num /= 10000
@@ -145,7 +145,7 @@ func ConvertNumberArToCh(num int) string {
 	return strings.Join(result, "")
 }
 
-func convertPart(part int) string {
+func convertArNumberPart(part int64) string {
 	var partResult []string
 	unitIndex := 0
 
@@ -183,4 +183,10 @@ var chNumberToUpperReplacer = strings.NewReplacer(
 // UpperChNumber 大写中文数字
 func UpperChNumber(s string) string {
 	return chNumberToUpperReplacer.Replace(s)
+}
+
+// ConvertNumberArToChUpper 阿拉伯数字转大写中文数字
+func ConvertNumberArToChUpper(num int64) string {
+	v := ConvertNumberArToCh(num)
+	return UpperChNumber(v)
 }
