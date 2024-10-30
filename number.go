@@ -164,3 +164,23 @@ func convertPart(part int) string {
 
 	return strings.Join(partResult, "")
 }
+
+var chNumberToUpperReplacer = strings.NewReplacer(
+	"一", "壹",
+	"二", "贰",
+	"三", "叁",
+	"四", "肆",
+	"五", "伍",
+	"六", "陆",
+	"七", "柒",
+	"八", "捌",
+	"九", "玖",
+	"十", "拾",
+	"百", "佰",
+	"千", "仟",
+)
+
+// UpperChNumber 大写中文数字
+func UpperChNumber(s string) string {
+	return chNumberToUpperReplacer.Replace(s)
+}
