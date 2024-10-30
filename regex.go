@@ -134,7 +134,11 @@ func FindChineseWords(text string, n ...int) []string {
 		_n = -1
 	}
 	matches := regexContainsChinese.FindAllStringSubmatch(text, _n)
-	var result []string
+	_n = 0
+	for _, words := range matches {
+		_n += len(words)
+	}
+	result := make([]string, 0, _n)
 	for _, words := range matches {
 		result = append(result, words...)
 	}
