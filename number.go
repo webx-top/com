@@ -119,6 +119,7 @@ var numMap = map[int]string{
 var unitMap = []string{"", "十", "百", "千"}
 var bigUnitMap = []string{"", "万", "亿"}
 
+// ConvertNumberArToCh 阿拉伯数字转中文数字
 func ConvertNumberArToCh(num int) string {
 	if num == 0 {
 		return numMap[0]
