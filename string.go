@@ -639,12 +639,12 @@ func ContainsWord(src string, word string) bool {
 	return re.MatchString(src)
 }
 
-// ToMBText 全角转半角
-func ToSBText(s string) string {
+// MBToSBText 全角转半角
+func MBToSBText(s string) string {
 	return width.Narrow.String(s)
 }
 
-// ToMBText 半角转全角
-func ToMBText(s string) string {
+// SBToMBText 半角转全角
+func SBToMBText(s string) string {
 	return width.Widen.String(s)
 }

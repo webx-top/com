@@ -64,7 +64,7 @@ func TestContainsWord(t *testing.T) {
 
 func TestMultipleBytesText(t *testing.T) {
 	s := `。，（）-1！@234567890abc１２３４５６７８９ａｂｃ`
-	v := ToSBText(s)
+	v := MBToSBText(s)
 	assert.Equal(t, `｡,()-1!@234567890abc123456789abc`, v)
-	assert.Equal(t, `。，（）－１！＠２３４５６７８９０ａｂｃ１２３４５６７８９ａｂｃ`, ToMBText(v))
+	assert.Equal(t, `。，（）－１！＠２３４５６７８９０ａｂｃ１２３４５６７８９ａｂｃ`, SBToMBText(v))
 }
