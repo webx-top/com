@@ -17,6 +17,15 @@ func TestTitleCase(t *testing.T) {
 	assert.Equal(t, `Webx Top`, TitleCase(`webx top`))
 }
 
+func TestPascalCaseWith(t *testing.T) {
+	assert.Equal(t, `WebxTop.CoscmsCom`, PascalCaseWith(`webx_top.coscms_com`, '.'))
+	assert.Equal(t, `webx_top.coscms_com`, SnakeCaseWith(`WebxTop.CoscmsCom`, '.'))
+
+	assert.Equal(t, `webxTopAbc`, CamelCase(`webx_top_abc`))
+	assert.Equal(t, `webxTop.coscmsCom`, CamelCaseWith(`webx_top.coscms_com`, '.'))
+	assert.Equal(t, `webx_top.coscms_com`, SnakeCaseWith(`webxTop.coscmsCom`, '.'))
+}
+
 func TestSlashes(t *testing.T) {
 	assert.Equal(t, `webx\'top\\`, AddSlashes(`webx'top\`))
 	assert.Equal(t, `webx'top\`, StripSlashes(`webx\'top\\`))

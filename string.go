@@ -429,8 +429,31 @@ func SnakeCase(name string) string {
 	return string(s)
 }
 
+func SnakeCaseWith(name string, sep ...rune) string {
+	var s []rune
+	var onlyLowerNext bool
+	for idx, chr := range name {
+		if isUpper := IsASCIIUpper(chr); isUpper {
+			if onlyLowerNext {
+				onlyLowerNext = false
+			} else if idx > 0 {
+				s = append(s, '_')
+			}
+			chr -= ('A' - 'a')
+		} else {
+			onlyLowerNext = InRunes(chr, sep)
+		}
+		s = append(s, chr)
+	}
+	return string(s)
+}
+
 // CamelCase : webx_top => webxTop
 func CamelCase(s string) string {
+	return CamelCaseWith(s)
+}
+
+func CamelCaseWith(s string, sep ...rune) string {
 	var n string
 	var capNext bool
 	for _, v := range s {
@@ -446,7 +469,7 @@ func CamelCase(s string) string {
 		if v == '_' || v == ' ' {
 			capNext = true
 		} else {
-			capNext = false
+			capNext = !InRunes(v, sep)
 			n += string(v)
 		}
 	}
@@ -455,6 +478,19 @@ func CamelCase(s string) string {
 
 // PascalCase : webx_top => WebxTop
 func PascalCase(s string) string {
+	return PascalCaseWith(s)
+}
+
+func InRunes(v rune, sep []rune) bool {
+	for _, sp := range sep {
+		if v == sp {
+			return true
+		}
+	}
+	return false
+}
+
+func PascalCaseWith(s string, sep ...rune) string {
 	var n string
 	capNext := true
 	for _, v := range s {
@@ -470,7 +506,7 @@ func PascalCase(s string) string {
 		if v == '_' || v == ' ' {
 			capNext = true
 		} else {
-			capNext = false
+			capNext = InRunes(v, sep)
 			n += string(v)
 		}
 	}
