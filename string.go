@@ -129,8 +129,20 @@ func JSONEncode(data interface{}, indents ...string) ([]byte, error) {
 	return json.Marshal(data)
 }
 
+func JSONEncodeToString(data interface{}, indents ...string) (string, error) {
+	b, err := JSONEncode(data, indents...)
+	if err != nil {
+		return ``, err
+	}
+	return Bytes2str(b), err
+}
+
 func JSONDecode(data []byte, to interface{}) error {
 	return json.Unmarshal(data, to)
+}
+
+func JSONDecodeString(data string, to interface{}) error {
+	return JSONDecode(Str2bytes(data), to)
 }
 
 func sha(m hash.Hash, str string) string {
