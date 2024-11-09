@@ -128,3 +128,23 @@ func JoinNumbers[T Number](slice []T, sep string) string {
 	}
 	return sb.String()
 }
+
+func MapKeys[K Scalar, V any](m map[K]V) []K {
+	r := make([]K, 0, len(m))
+	for k := range m {
+		r = append(r, k)
+	}
+	return r
+}
+
+func SplitSliceByGroup[K Scalar, V any](rows []V, groupValue func(V) K) map[K][]V {
+	r := map[K][]V{}
+	for _, row := range rows {
+		k := groupValue(row)
+		if _, ok := r[k]; !ok {
+			r[k] = []V{}
+		}
+		r[k] = append(r[k], row)
+	}
+	return r
+}
