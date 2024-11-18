@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/webx-top/com/encoding/json"
 )
@@ -70,4 +71,45 @@ func Dump(m interface{}, args ...bool) (r string) {
 		fmt.Println(r)
 	}
 	return
+}
+
+var jsonArrayReplacer = strings.NewReplacer(
+	`[`, ``,
+	`]`, ``,
+	`"`, ``,
+	`'`, ``,
+	"`", ``,
+	`\`, ``,
+)
+
+func ListToJSONArray(list string, unique ...bool) string {
+	items := strings.Split(list, `,`)
+	result := make([]string, 0, len(items))
+	if len(unique) > 0 && unique[0] {
+		uniqMap := map[string]struct{}{}
+		for _, item := range items {
+			item = strings.TrimSpace(item)
+			item = jsonArrayReplacer.Replace(item)
+			if len(item) == 0 {
+				continue
+			}
+			if _, ok := uniqMap[item]; ok {
+				continue
+			}
+			result = append(result, item)
+			uniqMap[item] = struct{}{}
+		}
+		list, _ = SetJSON(result)
+		return list
+	}
+	for _, item := range items {
+		item = strings.TrimSpace(item)
+		item = jsonArrayReplacer.Replace(item)
+		if len(item) == 0 {
+			continue
+		}
+		result = append(result, item)
+	}
+	list, _ = SetJSON(result)
+	return list
 }
