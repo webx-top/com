@@ -19,12 +19,70 @@
 package com
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"math"
 	"strconv"
 	"strings"
 )
+
+func AsType(typ string, val interface{}) interface{} {
+	switch typ {
+	case `string`:
+		return String(val)
+	case `bytes`, `[]byte`:
+		return Bytes(val)
+	case `bool`:
+		return Bool(val)
+	case `float64`:
+		return Float64(val)
+	case `float32`:
+		return Float32(val)
+	case `int8`:
+		return Int8(val)
+	case `int16`:
+		return Int16(val)
+	case `int`:
+		return Int(val)
+	case `int32`:
+		return Int32(val)
+	case `int64`:
+		return Int64(val)
+	case `uint8`:
+		return Uint8(val)
+	case `uint16`:
+		return Uint16(val)
+	case `uint`:
+		return Uint(val)
+	case `uint32`:
+		return Uint32(val)
+	case `uint64`:
+		return Uint64(val)
+	default:
+		return val
+	}
+}
+
+func Bytes(val interface{}) []byte {
+	switch v := val.(type) {
+	case []byte:
+		return v
+	case nil:
+		return nil
+	case string:
+		return []byte(v)
+	default:
+		var buf bytes.Buffer
+		enc := gob.NewEncoder(&buf)
+		err := enc.Encode(val)
+		if err != nil {
+			return nil
+		}
+		return buf.Bytes()
+	}
+}
 
 func Int64(i interface{}) int64 {
 	switch v := i.(type) {
