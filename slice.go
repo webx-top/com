@@ -225,8 +225,7 @@ func SliceRandList(min, max int) []int {
 		min, max = max, min
 	}
 	length := max - min + 1
-	t0 := time.Now()
-	rand.Seed(int64(t0.Nanosecond()))
+	rand := NewRand()
 	list := rand.Perm(length)
 	for index := range list {
 		list[index] += min

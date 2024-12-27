@@ -15,6 +15,7 @@
 package com
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/hmac"
 	"crypto/md5"
@@ -68,6 +69,24 @@ func ByteMd5(b []byte) string {
 func Md5file(file string) string {
 	barray, _ := os.ReadFile(file)
 	return ByteMd5(barray)
+}
+
+func Md5Reader(r io.Reader) (string, error) {
+	h := md5.New()
+	reader := bufio.NewReader(r)
+	buf := make([]byte, 4096) // 4KB的缓冲区
+	for {
+		n, err := reader.Read(buf)
+		if err != nil && err != io.EOF {
+			return ``, err
+		}
+		if n == 0 {
+			break
+		}
+		h.Write(buf[:n])
+	}
+	md5sum := h.Sum(nil)
+	return hex.EncodeToString(md5sum), nil
 }
 
 func Token(key string, val []byte, args ...string) string {
@@ -230,25 +249,30 @@ func Reverse(s string) string {
 	return string(runes[n:])
 }
 
+func NewRand() *r.Rand {
+	return r.New(r.NewSource(time.Now().UnixNano()))
+}
+
 // RandomCreateBytes generate random []byte by specify chars.
 func RandomCreateBytes(n int, alphabets ...byte) []byte {
 	const alphanum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	var bytes = make([]byte, n)
 	var randby bool
+	var rd *r.Rand
 	if num, err := rand.Read(bytes); num != n || err != nil {
-		r.Seed(time.Now().UnixNano())
+		rd = NewRand()
 		randby = true
 	}
 	for i, b := range bytes {
 		if len(alphabets) == 0 {
 			if randby {
-				bytes[i] = alphanum[r.Intn(len(alphanum))]
+				bytes[i] = alphanum[rd.Intn(len(alphanum))]
 			} else {
 				bytes[i] = alphanum[b%byte(len(alphanum))]
 			}
 		} else {
 			if randby {
-				bytes[i] = alphabets[r.Intn(len(alphabets))]
+				bytes[i] = alphabets[rd.Intn(len(alphabets))]
 			} else {
 				bytes[i] = alphabets[b%byte(len(alphabets))]
 			}
