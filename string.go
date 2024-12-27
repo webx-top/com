@@ -263,19 +263,23 @@ func RandomCreateBytes(n int, alphabets ...byte) []byte {
 		rd = NewRand()
 		randby = true
 	}
+	if len(alphabets) == 0 {
+		size := len(alphanum)
+		for i, b := range bytes {
+			if randby {
+				bytes[i] = alphanum[rd.Intn(size)]
+			} else {
+				bytes[i] = alphanum[b%byte(size)]
+			}
+		}
+		return bytes
+	}
+	size := len(alphabets)
 	for i, b := range bytes {
-		if len(alphabets) == 0 {
-			if randby {
-				bytes[i] = alphanum[rd.Intn(len(alphanum))]
-			} else {
-				bytes[i] = alphanum[b%byte(len(alphanum))]
-			}
+		if randby {
+			bytes[i] = alphabets[rd.Intn(size)]
 		} else {
-			if randby {
-				bytes[i] = alphabets[rd.Intn(len(alphabets))]
-			} else {
-				bytes[i] = alphabets[b%byte(len(alphabets))]
-			}
+			bytes[i] = alphabets[b%byte(size)]
 		}
 	}
 	return bytes
