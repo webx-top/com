@@ -475,11 +475,31 @@ func TarGz(srcDirPath string, destFilePath string, args ...*regexp.Regexp) error
 		return err
 	}
 	defer fw.Close()
-
 	// Gzip writer
 	gw := gzip.NewWriter(fw)
-	defer gw.Close()
+	err = tarGz(gw, srcDirPath, args...)
+	gw.Close()
+	return err
+}
 
+func TarGzWithLevel(compressLevel int, srcDirPath string, destFilePath string, args ...*regexp.Regexp) error {
+	fw, err := os.Create(destFilePath)
+	if err != nil {
+		return err
+	}
+	defer fw.Close()
+	// Gzip writer
+	var gw *gzip.Writer
+	gw, err = gzip.NewWriterLevel(fw, compressLevel)
+	if err != nil {
+		return err
+	}
+	err = tarGz(gw, srcDirPath, args...)
+	gw.Close()
+	return err
+}
+
+func tarGz(gw *gzip.Writer, srcDirPath string, args ...*regexp.Regexp) error {
 	// Tar writer
 	tw := tar.NewWriter(gw)
 	defer tw.Close()
