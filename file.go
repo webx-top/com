@@ -451,15 +451,14 @@ func Unzip(srcPath, destPath string) error {
 		}
 
 		// Write data to file
-		fw, err := os.Create(filepath.Join(destPath, f.Name))
+		var fw *os.File
+		fw, err = os.Create(filepath.Join(destPath, f.Name))
 		if err != nil {
 			return err
 		}
 		_, err = io.Copy(fw, rc)
-
-		if fw != nil {
-			fw.Close()
-		}
+		fw.Close()
+		rc.Close()
 		if err != nil {
 			return err
 		}
