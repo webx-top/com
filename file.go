@@ -451,7 +451,7 @@ func Unzip(srcPath, destPath string) error {
 		}
 
 		// Write data to file
-		fw, _ := os.Create(filepath.Join(destPath, f.Name))
+		fw, err := os.Create(filepath.Join(destPath, f.Name))
 		if err != nil {
 			return err
 		}
