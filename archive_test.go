@@ -21,6 +21,7 @@ func TestIllegalFilePath(t *testing.T) {
 	assert.False(t, IllegalFilePath(`a/b/c/..a.txt`))
 	assert.True(t, IllegalFilePath(`..`))
 	assert.True(t, IllegalFilePath(`/..`))
+	assert.True(t, IllegalFilePath(`\\..`))
 }
 
 func TestZip(t *testing.T) {
