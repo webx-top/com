@@ -78,9 +78,18 @@ func Zip(srcDirPath string, destFilePath string, args ...*regexp.Regexp) (n int6
 	return
 }
 
-func IllegalFilePath(path string) bool {
+func IllegalFilePath(fpath string) bool {
+	if fpath == `..` {
+		return true
+	}
+	if strings.HasSuffix(fpath, `..`) {
+		i := len(fpath) - 3
+		if fpath[i] == '/' || fpath[i] == '\\' {
+			return true
+		}
+	}
 	var dots int
-	for _, c := range path {
+	for _, c := range fpath {
 		switch c {
 		case '.':
 			dots++

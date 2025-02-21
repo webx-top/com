@@ -8,6 +8,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIllegalFilePath(t *testing.T) {
+	assert.Equal(t, `/a/b/c`, filepath.Dir(`/a/b/c/..a.txt`))
+	assert.Equal(t, `/a/b`, filepath.Dir(`/a/b/c/../a.txt`))
+	assert.Equal(t, `/abc/a/b/a.txt`, filepath.Join(`/abc`, `/a/b/c/../a.txt`))
+	assert.Equal(t, `/abc/a\b\c\..\a.txt`, filepath.Join(`/abc`, `/a\b\c\..\a.txt`))
+	assert.Equal(t, `/abc/a/b/c/..a.txt`, filepath.Join(`/abc`, `/a/b/c/..a.txt`))
+	assert.Equal(t, `/a/b`, filepath.Join(`/a/b/c`, `..`))
+	assert.Equal(t, `/a/b`, filepath.Join(`/a/b/c/..`))
+	assert.True(t, IllegalFilePath(`a/b/c/../a.txt`))
+	assert.True(t, IllegalFilePath(`a/b/c/..\a.txt`))
+	assert.False(t, IllegalFilePath(`a/b/c/..a.txt`))
+	assert.True(t, IllegalFilePath(`..`))
+	assert.True(t, IllegalFilePath(`/..`))
+}
+
 func TestZip(t *testing.T) {
 	MkdirAll(`testdata`, os.ModePerm)
 	n, err := Zip(`./encoding`, `testdata/test.zip`)
@@ -16,15 +31,6 @@ func TestZip(t *testing.T) {
 
 	err = Unzip(`testdata/test.zip`, `testdata/unarchive`)
 	assert.NoError(t, err)
-
-	assert.Equal(t, `/a/b/c`, filepath.Dir(`/a/b/c/..a.txt`))
-	assert.Equal(t, `/a/b`, filepath.Dir(`/a/b/c/../a.txt`))
-	assert.Equal(t, `/abc/a/b/a.txt`, filepath.Join(`/abc`, `/a/b/c/../a.txt`))
-	assert.Equal(t, `/abc/a\b\c\..\a.txt`, filepath.Join(`/abc`, `/a\b\c\..\a.txt`))
-	assert.Equal(t, `/abc/a/b/c/..a.txt`, filepath.Join(`/abc`, `/a/b/c/..a.txt`))
-	assert.True(t, IllegalFilePath(`a/b/c/../a.txt`))
-	assert.True(t, IllegalFilePath(`a/b/c/..\a.txt`))
-	assert.False(t, IllegalFilePath(`a/b/c/..a.txt`))
 }
 
 func TestTarGz(t *testing.T) {
