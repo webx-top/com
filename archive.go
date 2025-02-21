@@ -53,7 +53,7 @@ func Zip(srcDirPath string, destFilePath string, args ...*regexp.Regexp) (n int6
 		relativePath := strings.TrimPrefix(path, root)
 		relativePath = strings.Replace(relativePath, `\`, `/`, -1)
 		relativePath = strings.TrimPrefix(relativePath, `/`)
-		f, err := w.Create(relativePath)
+		fw, err := w.Create(relativePath)
 		if err != nil {
 			return err
 		}
@@ -61,8 +61,8 @@ func Zip(srcDirPath string, destFilePath string, args ...*regexp.Regexp) (n int6
 		if err != nil {
 			return err
 		}
-		defer sf.Close()
-		_, err = io.Copy(f, sf)
+		_, err = io.Copy(fw, sf)
+		sf.Close()
 		return err
 	})
 
@@ -78,6 +78,25 @@ func Zip(srcDirPath string, destFilePath string, args ...*regexp.Regexp) (n int6
 	return
 }
 
+func IllegalFilePath(path string) bool {
+	var dots int
+	for _, c := range path {
+		switch c {
+		case '.':
+			dots++
+		case '/':
+			fallthrough
+		case '\\':
+			if dots > 1 {
+				return true
+			}
+		default:
+			dots = 0
+		}
+	}
+	return false
+}
+
 // Unzip unzips .zip file to 'destPath'.
 // It returns error when fail to finish operation.
 func Unzip(srcPath, destPath string) error {
@@ -90,24 +109,34 @@ func Unzip(srcPath, destPath string) error {
 
 	// Iterate through the files in the archive
 	for _, f := range r.File {
+		if IllegalFilePath(f.Name) {
+			return fmt.Errorf("illegal file path in %s: %v", filepath.Base(srcPath), f.Name)
+		}
+
+		fullPath := filepath.Join(destPath, f.Name)
+		if f.FileInfo().IsDir() {
+			if err = os.MkdirAll(fullPath, f.Mode()); err != nil {
+				return err
+			}
+			continue
+		}
+
+		dir := filepath.Dir(f.Name)
+		// Create directory before create file
+		if err = os.MkdirAll(filepath.Join(destPath, dir), os.ModePerm); err != nil {
+			return err
+		}
+
 		// Get files from archive
 		rc, err := f.Open()
 		if err != nil {
 			return err
 		}
-
-		dir := filepath.Dir(f.Name)
-		// Create directory before create file
-		os.MkdirAll(destPath+"/"+dir, os.ModePerm)
-
-		if f.FileInfo().IsDir() {
-			continue
-		}
-
 		// Write data to file
 		var fw *os.File
-		fw, err = os.Create(filepath.Join(destPath, f.Name))
+		fw, err = os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
+			rc.Close()
 			return err
 		}
 		_, err = io.Copy(fw, rc)
@@ -163,6 +192,7 @@ func tarGz(gw *gzip.Writer, srcDirPath string, args ...*regexp.Regexp) error {
 		return err
 	}
 	fi, err := f.Stat()
+	f.Close()
 	if err != nil {
 		return err
 	}
@@ -177,7 +207,7 @@ func tarGz(gw *gzip.Writer, srcDirPath string, args ...*regexp.Regexp) error {
 		}
 		// handle source directory
 		fmt.Println("Cerating tar.gz from directory...")
-		if err := tarGzDir(srcDirPath, filepath.Base(srcDirPath), tw, regexpFileName, regexpIgnoreFile); err != nil {
+		if err := tarGzDir(srcDirPath, `.`, tw, regexpFileName, regexpIgnoreFile); err != nil {
 			return err
 		}
 	} else {
@@ -286,7 +316,9 @@ func tarGzFile(srcFile string, recPath string, tw *tar.Writer, fi os.FileInfo) e
 // It returns error when fail to finish operation.
 func UnTarGz(srcFilePath string, destDirPath string) ([]string, error) {
 	// Create destination directory
-	os.Mkdir(destDirPath, os.ModePerm)
+	if err := os.MkdirAll(destDirPath, os.ModePerm); err != nil {
+		return nil, err
+	}
 
 	fr, err := os.Open(srcFilePath)
 	if err != nil {
@@ -312,23 +344,35 @@ func UnTarGz(srcFilePath string, destDirPath string) ([]string, error) {
 			break
 		}
 
+		if IllegalFilePath(hdr.Name) {
+			return nil, fmt.Errorf("illegal file path in %s: %v", filepath.Base(srcFilePath), hdr.Name)
+		}
+		fullPath := filepath.Join(destDirPath, hdr.Name)
+		mode := hdr.FileInfo().Mode()
+
 		// Check if it is directory or file
 		if hdr.Typeflag != tar.TypeDir {
 			// Get files from archive
 			// Create directory before create file
 			dir := filepath.Dir(hdr.Name)
-			os.MkdirAll(destDirPath+"/"+dir, os.ModePerm)
-			dirs = AppendStr(dirs, dir)
+			if err = os.MkdirAll(filepath.Join(destDirPath, dir), os.ModePerm); err != nil {
+				return nil, err
+			}
 
 			// Write data to file
-			fw, _ := os.Create(destDirPath + "/" + hdr.Name)
+			var fw *os.File
+			fw, err = os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, mode)
 			if err != nil {
 				return nil, err
 			}
 			_, err = io.Copy(fw, tr)
-			if err != nil {
-				return nil, err
-			}
+			fw.Close()
+		} else {
+			dirs = AppendStr(dirs, fullPath)
+			err = os.MkdirAll(fullPath, mode)
+		}
+		if err != nil {
+			return nil, err
 		}
 	}
 	return dirs, nil
