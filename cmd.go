@@ -23,7 +23,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -60,7 +59,7 @@ func ExecCmdDirBytesWithContext(ctx context.Context, dir, cmdName string, args .
 	err := cmd.Run()
 	if err != nil {
 		if e, y := err.(*exec.ExitError); y {
-			OnCmdExitError(append([]string{cmdName}, args...), e)
+			OnCmdExitError(cmd, e)
 		} else {
 			cmd.Stderr.Write([]byte(err.Error() + "\n"))
 		}
@@ -515,8 +514,8 @@ func RunCmdStrWriterWithContext(ctx context.Context, command string, writer ...i
 	return RunCmdWriterWithContext(ctx, params, writer...)
 }
 
-var OnCmdExitError = func(params []string, err *exec.ExitError) {
-	fmt.Printf("[%v]The process exited abnormally: PID(%d) PARAMS(%v) ERR(%v)\n", time.Now().Format(`2006-01-02 15:04:05`), err.Pid(), params, err)
+var OnCmdExitError = func(cmd *exec.Cmd, err *exec.ExitError) {
+	log.Printf("[%v]The process exited abnormally: PID(%d) CMD(%v) ERR(%v)\n", time.Now().Format(`2006-01-02 15:04:05`), err.Pid(), cmd.String(), err)
 }
 
 func RunCmdReaderWriterWithContext(ctx context.Context, params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
@@ -527,7 +526,7 @@ func RunCmdReaderWriterWithContext(ctx context.Context, params []string, reader 
 		err := cmd.Run()
 		if err != nil {
 			if e, y := err.(*exec.ExitError); y {
-				OnCmdExitError(params, e)
+				OnCmdExitError(cmd, e)
 			} else {
 				cmd.Stderr.Write([]byte(err.Error() + "\n"))
 			}
@@ -552,7 +551,7 @@ func RunCmdWriterWithContext(ctx context.Context, params []string, writer ...io.
 		err := cmd.Run()
 		if err != nil {
 			if e, y := err.(*exec.ExitError); y {
-				OnCmdExitError(params, e)
+				OnCmdExitError(cmd, e)
 			} else {
 				cmd.Stderr.Write([]byte(err.Error() + "\n"))
 			}
@@ -587,7 +586,7 @@ func RunCmdWriterxWithContext(ctx context.Context, params []string, wait time.Du
 		err = cmd.Run()
 		if err != nil {
 			if e, y := err.(*exec.ExitError); y {
-				OnCmdExitError(params, e)
+				OnCmdExitError(cmd, e)
 			} else {
 				cmd.Stderr.Write([]byte(err.Error() + "\n"))
 			}
