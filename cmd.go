@@ -61,10 +61,7 @@ func ExecCmdDirBytesWithContext(ctx context.Context, dir, cmdName string, args .
 		if e, y := err.(*exec.ExitError); y {
 			OnCmdExitError(cmd, e)
 		} else {
-			cmd.Stderr.Write(Str2bytes(cmd.String()))
-			cmd.Stderr.Write(Str2bytes(": "))
-			cmd.Stderr.Write(Str2bytes(err.Error()))
-			cmd.Stderr.Write(Str2bytes("\n"))
+			OnCmdDefaultError(cmd, err)
 		}
 	}
 	return bufOut.Bytes(), bufErr.Bytes(), err
@@ -521,6 +518,13 @@ var OnCmdExitError = func(cmd *exec.Cmd, err *exec.ExitError) {
 	log.Printf("[%v]The process exited abnormally: PID(%d) CMD(%v) ERR(%v)\n", time.Now().Format(`2006-01-02 15:04:05`), err.Pid(), cmd.String(), err)
 }
 
+var OnCmdDefaultError = func(cmd *exec.Cmd, err error) {
+	cmd.Stderr.Write(Str2bytes(cmd.String()))
+	cmd.Stderr.Write(Str2bytes(": "))
+	cmd.Stderr.Write(Str2bytes(err.Error()))
+	cmd.Stderr.Write(Str2bytes("\n"))
+}
+
 func RunCmdReaderWriterWithContext(ctx context.Context, params []string, reader io.Reader, writer ...io.Writer) *exec.Cmd {
 	cmd := CreateCmdWriterWithContext(ctx, params, writer...)
 	cmd.Stdin = reader
@@ -531,7 +535,7 @@ func RunCmdReaderWriterWithContext(ctx context.Context, params []string, reader 
 			if e, y := err.(*exec.ExitError); y {
 				OnCmdExitError(cmd, e)
 			} else {
-				cmd.Stderr.Write([]byte(err.Error() + "\n"))
+				OnCmdDefaultError(cmd, err)
 			}
 		}
 	}()
@@ -556,7 +560,7 @@ func RunCmdWriterWithContext(ctx context.Context, params []string, writer ...io.
 			if e, y := err.(*exec.ExitError); y {
 				OnCmdExitError(cmd, e)
 			} else {
-				cmd.Stderr.Write([]byte(err.Error() + "\n"))
+				OnCmdDefaultError(cmd, err)
 			}
 		}
 	}()
@@ -591,7 +595,7 @@ func RunCmdWriterxWithContext(ctx context.Context, params []string, wait time.Du
 			if e, y := err.(*exec.ExitError); y {
 				OnCmdExitError(cmd, e)
 			} else {
-				cmd.Stderr.Write([]byte(err.Error() + "\n"))
+				OnCmdDefaultError(cmd, err)
 			}
 		}
 	}()
