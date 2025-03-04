@@ -61,7 +61,10 @@ func ExecCmdDirBytesWithContext(ctx context.Context, dir, cmdName string, args .
 		if e, y := err.(*exec.ExitError); y {
 			OnCmdExitError(cmd, e)
 		} else {
-			cmd.Stderr.Write([]byte(err.Error() + "\n"))
+			cmd.Stderr.Write(Str2bytes(cmd.String()))
+			cmd.Stderr.Write(Str2bytes(": "))
+			cmd.Stderr.Write(Str2bytes(err.Error()))
+			cmd.Stderr.Write(Str2bytes("\n"))
 		}
 	}
 	return bufOut.Bytes(), bufErr.Bytes(), err
