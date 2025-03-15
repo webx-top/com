@@ -35,7 +35,7 @@ func TestMakePassword(t *testing.T) {
 
 	hashed, err = SCryptMakePassword(`github.com/webx-top/com`)
 	assert.NoError(t, err)
-	fmt.Println(`SCrypt:`, hashed, len(hashed)) // 32768$8$1$XsBM1x/aAJvhCQW/M6Vv7g==$203ea981411b947a8ed459e5359e347f113cfff106a1800ecbc3862fe05a9662 99
+	fmt.Println(`SCrypt:`, hashed, len(hashed)) // 32768$8$1$JlhjCxGNkNubajnj_wQRSg$b8b2e5864a2724b635028a19a58f83efb6f876b4713f7631bf5aa663c6269f2b 97
 	err = SCryptCheckPassword(hashed, `github.com/webx-top/com`)
 	assert.NoError(t, err)
 
