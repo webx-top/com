@@ -1,6 +1,7 @@
 package com
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,4 +44,21 @@ func TestRawURLEncode(t *testing.T) {
 	assert.Equal(t, rawText, result)
 	result, _ = RawURLDecode(expected)
 	assert.Equal(t, rawText, result)
+}
+
+func TestAbsURL(t *testing.T) {
+	pageURL := AbsURL(`https://www.coscms.com/system/download/index`, `../download2/index`)
+	assert.Equal(t, `https://www.coscms.com/system/download2/index`, pageURL)
+
+	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `../../system2/download2/index`)
+	assert.Equal(t, `https://www.coscms.com/system2/download2/index`, pageURL)
+
+	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `/payment/index/index`)
+	assert.Equal(t, `https://www.coscms.com/payment/index/index`, pageURL)
+
+	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `./payment/index/index`)
+	assert.Equal(t, `https://www.coscms.com/system/download/payment/index/index`, pageURL)
+
+	fmt.Println(`SelfDir:`, SelfDir())
+	fmt.Println(`SelfPath:`, SelfPath())
 }

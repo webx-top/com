@@ -1,7 +1,6 @@
 package com
 
 import (
-	"crypto/sha1"
 	"fmt"
 	"testing"
 
@@ -28,13 +27,16 @@ func TestMakePassword(t *testing.T) {
 		t.Errorf(`The passwords do not match`)
 	}
 	salt = `github.com/webx-top/com`
-	dk := PBKDF2Key([]byte("some password"), []byte(salt), 4096, 32, sha1.New)
-	fmt.Println(`PBKDF2:`, string(dk), len(dk))
-
 	hashedPassword, err := BCryptMakePassword(`github.com/webx-top/com`)
 	assert.NoError(t, err)
 	fmt.Println(`BCrypt:`, string(hashedPassword), len(hashedPassword)) // $2a$10$7eI1PPyMbvY5E6g6IeOh.OunLNMrguV/tL.mK9HZIUf//iBZ49nW6
 	err = BCryptCheckPassword(string(hashedPassword), `github.com/webx-top/com`)
+	assert.NoError(t, err)
+
+	hashed, err = SCryptMakePassword(`github.com/webx-top/com`)
+	assert.NoError(t, err)
+	fmt.Println(`SCrypt:`, hashed, len(hashed)) // 32768$8$1$XsBM1x/aAJvhCQW/M6Vv7g==$203ea981411b947a8ed459e5359e347f113cfff106a1800ecbc3862fe05a9662 99
+	err = SCryptCheckPassword(hashed, `github.com/webx-top/com`)
 	assert.NoError(t, err)
 
 	hashed, err = Argon2MakePasswordShortly(`github.com/webx-top/com`, Salt())
@@ -58,21 +60,4 @@ func TestMakePassword(t *testing.T) {
 	fmt.Println(`Argon2:`, hashed, len(hashed))
 	err = Argon2CheckPassword(hashed, `github.com/webx-top/com`)
 	assert.NoError(t, err)
-}
-
-func TestAbsURL(t *testing.T) {
-	pageURL := AbsURL(`https://www.coscms.com/system/download/index`, `../download2/index`)
-	assert.Equal(t, `https://www.coscms.com/system/download2/index`, pageURL)
-
-	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `../../system2/download2/index`)
-	assert.Equal(t, `https://www.coscms.com/system2/download2/index`, pageURL)
-
-	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `/payment/index/index`)
-	assert.Equal(t, `https://www.coscms.com/payment/index/index`, pageURL)
-
-	pageURL = AbsURL(`https://www.coscms.com/system/download/index`, `./payment/index/index`)
-	assert.Equal(t, `https://www.coscms.com/system/download/payment/index/index`, pageURL)
-
-	fmt.Println(`SelfDir:`, SelfDir())
-	fmt.Println(`SelfPath:`, SelfPath())
 }
