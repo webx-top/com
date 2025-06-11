@@ -62,3 +62,11 @@ func TestAbsURL(t *testing.T) {
 	fmt.Println(`SelfDir:`, SelfDir())
 	fmt.Println(`SelfPath:`, SelfPath())
 }
+
+func TestFullURL(t *testing.T) {
+	pageURL := FullURL(`https://www.coscms.com/`, `/download2/index`)
+	assert.Equal(t, `https://www.coscms.com/download2/index`, pageURL)
+
+	pageURL = FullURL(`https://www.coscms.com`, `/download2/index`)
+	assert.Equal(t, `https://www.coscms.com/download2/index`, pageURL)
+}
