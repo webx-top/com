@@ -32,5 +32,12 @@ func TestNumberTrimZero(t *testing.T) {
 func TestToFloat64(t *testing.T) {
 	v := `100000000000000163.0100`
 	n := Float64(v)
+	t.Logf(`convert %s => %f`, v, n)
 	assert.Equal(t, 100000000000000163.01, n)
+	//assert.Equal(t, v, String(n)) // 100000000000000160
+	v2 := `95000000000000005.0100`
+	n2 := Float64(v2)
+	t.Logf(`convert %s => %f`, v2, n2)
+	assert.Equal(t, 95000000000000005.0100, n2)
+	//assert.Equal(t, v2, String(n2)) // 95000000000000000
 }
