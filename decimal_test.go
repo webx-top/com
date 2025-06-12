@@ -28,3 +28,9 @@ func TestNumberTrimZero(t *testing.T) {
 	r = FormatBytes(12344566, 2, true)
 	assert.Equal(t, `11.77MB`, r)
 }
+
+func TestToFloat64(t *testing.T) {
+	v := `100000000000000163.0100`
+	n := Float64(v)
+	assert.Equal(t, 100000000000000163.01, n)
+}
