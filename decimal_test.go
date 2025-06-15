@@ -33,17 +33,22 @@ func TestToFloat64(t *testing.T) {
 	v := `100000000000000163.0100`
 	n := Float64(v)
 	t.Logf(`convert %s => %f`, v, n)
-	assert.Equal(t, 100000000000000163.01, n)
+	assert.Equal(t, 100_000_000_000_000_163.01, n)
 	//assert.Equal(t, v, String(n)) // 100000000000000160
 	v2 := `95000000000000005.0100`
 	n2 := Float64(v2)
 	t.Logf(`convert %s => %f`, v2, n2)
-	assert.Equal(t, 95000000000000005.0100, n2)
+	assert.Equal(t, 95_000_000_000_000_005.0100, n2)
 	//assert.Equal(t, v2, String(n2)) // 95000000000000000
 	vY := `100000000000163.0100`
 	nY := Float64(vY)
 	t.Logf(`convert %s => %f`, vY, nY)
-	assert.Equal(t, 100000000000163.01, nY) // 100000000000163.015625
+	assert.Equal(t, 100_000_000_000_163.01, nY) // 100000000000163.015625
+
+	vY = `99999999999163.0100`
+	nY = Float64(vY)
+	t.Logf(`convert %s => %f`, vY, nY)
+	assert.Equal(t, 99_999_999_999_163.01, nY) // 99999999999163.015625
 
 	// dec, err := decimal.NewFromString(vY)
 	// assert.NoError(t, err)
