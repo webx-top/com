@@ -7,6 +7,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNumberFormat(t *testing.T) {
+	s := 2.123987666
+	i := NumberFormat(s, 5)
+	assert.Equal(t, `2.12399`, i)
+
+	s = 12345678.123987666
+	i = NumberFormat(s, 5)
+	assert.Equal(t, `12,345,678.12399`, i)
+
+	s = 12345678.12
+	i = NumberFormat(s, 5, ``, `trimZero`)
+	assert.Equal(t, `12345678.12`, i)
+
+	s = 12345678
+	for j := 0; j <= 3; j++ {
+		i = NumberFormat(s, j, ``, `trimZero`)
+		assert.Equal(t, `12345678`, i)
+	}
+
+	s = -345678.123987666
+	i = NumberFormat(s, 5)
+	assert.Equal(t, `-345,678.12399`, i)
+}
+
 func TestNumberTrim(t *testing.T) {
 	s := `2.123987666`
 	i := Float2int(s)
