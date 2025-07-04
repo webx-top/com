@@ -124,13 +124,14 @@ func NumberFormat(number interface{}, precision int, separator ...string) string
 	return numberWithSeparator(r, separator...)
 }
 
+var mumFormatDefaultArgs = []string{`,`, `trimZero`}
+
 // NumFormat 数字格式化。默认裁剪小数部分右侧的0
 func NumFormat(number interface{}, precision int, separator ...string) string {
 	length := len(separator)
 	switch length {
 	case 0:
-		separator = append(separator, `,`)
-		fallthrough
+		separator = mumFormatDefaultArgs
 	case 1:
 		separator = append(separator, `trimZero`)
 	}
