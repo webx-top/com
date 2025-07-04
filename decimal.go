@@ -123,3 +123,16 @@ func NumberFormat(number interface{}, precision int, separator ...string) string
 	r := fmt.Sprintf(`%.*f`, precision, Float64(number))
 	return numberWithSeparator(r, separator...)
 }
+
+// NumFormat 数字格式化。默认裁剪小数部分右侧的0
+func NumFormat(number interface{}, precision int, separator ...string) string {
+	length := len(separator)
+	switch length {
+	case 0:
+		separator = append(separator, `,`)
+		fallthrough
+	case 1:
+		separator = append(separator, `trimZero`)
+	}
+	return NumberFormat(number, precision, separator...)
+}
