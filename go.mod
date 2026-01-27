@@ -8,11 +8,11 @@ require (
 	github.com/admpub/pp v0.0.7
 	github.com/francoispqt/gojay v1.2.13
 	github.com/goccy/go-json v0.10.5
-	github.com/hashicorp/go-version v1.7.0
+	github.com/hashicorp/go-version v1.8.0
 	github.com/json-iterator/go v1.1.12
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/crypto v0.43.0
-	golang.org/x/text v0.30.0
+	golang.org/x/crypto v0.47.0
+	golang.org/x/text v0.33.0
 )
 
 require (
@@ -22,6 +22,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
