@@ -614,7 +614,27 @@ func AddRSlashes(s string) string {
 	return builder.String()
 }
 
-func StripSlashes(s string) string {
+var allQuoteBytes = []byte{'"', '`', '\''}
+var allRNTBytes = []byte{'r', 'n', 't'}
+
+func stripSlashesFilterKeepRNT(b byte) bool {
+	return InSlicex(b, allRNTBytes)
+}
+
+func stripSlashesFilterOnlyQuote(b byte) bool {
+	return !InSlicex(b, allQuoteBytes)
+}
+
+func StripSlashesKeepRNT(s string) string {
+	return StripSlashes(s, stripSlashesFilterKeepRNT)
+}
+
+func StripSlashesOnlyQuote(s string) string {
+	return StripSlashes(s, stripSlashesFilterOnlyQuote)
+}
+
+// filter: 用于判断 \ 后面的字节属于哪些字节时保留 \
+func StripSlashes(s string, filter ...func(byte) bool) string {
 	var builder strings.Builder
 	size := len(s)
 	var skip bool
@@ -625,8 +645,12 @@ func StripSlashes(s string) string {
 			continue
 		}
 		if ch == '\\' {
-			if i+1 < size && s[i+1] == '\\' {
-				skip = true
+			if i+1 < size {
+				if s[i+1] == '\\' {
+					skip = true
+				} else if len(filter) > 0 && filter[0](s[i+1]) {
+					builder.WriteRune(ch)
+				}
 			}
 			continue
 		}
