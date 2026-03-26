@@ -28,10 +28,11 @@ func TestPascalCaseWith(t *testing.T) {
 
 func TestSlashes(t *testing.T) {
 	assert.Equal(t, `webx\'top\\`, AddSlashes(`webx'top\`))
-	assert.Equal(t, `webx'top\`, StripSlashes(`webx\'top\\`))
+	assert.Equal(t, `webx'top\`, StripSlashesOnlyQuote(`webx\'top\\`))
 	assert.Equal(t, `webx\\\'top\\\\`, AddSlashes(`webx\'top\\`))
-	assert.Equal(t, `webx\'top\\`, StripSlashes(`webx\\\'top\\\\`))
-	assert.Equal(t, `webx'top'`, StripSlashes(`webx\'top\'`))
+	assert.Equal(t, `webx\'top\\`, StripSlashesOnlyQuote(`webx\\\'top\\\\`))
+	assert.Equal(t, `webx'top'`, StripSlashesOnlyQuote(`webx\'top\'`))
+	assert.Equal(t, `webxntopn"'`, StripSlashes(`webx\ntop\n\"\'\`))
 	assert.Equal(t, `webx\ntop\n`, StripSlashesKeepRNT(`webx\ntop\n`))
 	assert.Equal(t, `webx
 top
