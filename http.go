@@ -60,6 +60,10 @@ func ToNetipAddr(ip net.IP) (netip.Addr, bool) {
 	}
 }
 
+func FromNetipAddr(addr netip.Addr) net.IP {
+	return net.IP(addr.AsSlice())
+}
+
 var UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1541.0 Safari/537.36"
 
 // HTTPGet gets the specified resource. ErrNotFound is returned if the
