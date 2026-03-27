@@ -24,6 +24,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -46,6 +47,17 @@ type RemoteError struct {
 
 func (e *RemoteError) Error() string {
 	return e.Err.Error()
+}
+
+func ToNetipAddr(ip net.IP) (netip.Addr, bool) {
+	switch len(ip) {
+	case net.IPv4len:
+		return netip.AddrFromSlice(ip.To4()[:])
+	case net.IPv6len:
+		return netip.AddrFromSlice(ip.To16()[:])
+	default:
+		return netip.Addr{}, false
+	}
 }
 
 var UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1541.0 Safari/537.36"
