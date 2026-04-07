@@ -8,7 +8,7 @@ require (
 	github.com/admpub/pp v0.0.7
 	github.com/francoispqt/gojay v1.2.13
 	github.com/goccy/go-json v0.10.6
-	github.com/hashicorp/go-version v1.8.0
+	github.com/hashicorp/go-version v1.9.0
 	github.com/json-iterator/go v1.1.12
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.49.0
