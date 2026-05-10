@@ -313,7 +313,7 @@ func IsFile(filePath string) bool {
 // It returns false when the file or directory does not exist.
 func IsExist(path string) bool {
 	_, err := os.Stat(path)
-	return err == nil || os.IsExist(err)
+	return err == nil
 }
 
 func Unlink(file string) bool {

@@ -300,7 +300,7 @@ type HTTPClientOptions func(c *http.Client)
 func HTTPClientWithTimeout(timeout time.Duration, options ...HTTPClientOptions) *http.Client {
 	client := &http.Client{
 		Transport: &http.Transport{
-			Dial: func(netw, addr string) (net.Conn, error) {
+			DialContext: func(ctx context.Context, netw, addr string) (net.Conn, error) {
 				conn, err := net.DialTimeout(netw, addr, timeout)
 				if err != nil {
 					return nil, err

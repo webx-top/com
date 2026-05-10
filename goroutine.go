@@ -89,6 +89,7 @@ type eventSession struct {
 	mutex   sync.RWMutex
 	stop    chan struct{}
 	running atomic.Bool
+	closeOnce sync.Once
 }
 
 func (e *eventSession) Renew(t time.Time) {
@@ -110,8 +111,10 @@ func (e *eventSession) Cancel() <-chan struct{} {
 }
 
 func (e *eventSession) Close() {
-	e.stop <- struct{}{}
-	close(e.stop)
+	e.closeOnce.Do(func() {
+		e.stop <- struct{}{}
+		close(e.stop)
+	})
 }
 
 func (d *delayOnce) checkAndStore(parentCtx context.Context, key string, timeout time.Duration) (*eventSession, context.Context) {

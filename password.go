@@ -121,7 +121,7 @@ func (s *SCryptParams) SetDefaults() {
 		s.N = defaultSCryptParams.N
 	}
 	if s.R < 1 {
-		s.N = defaultSCryptParams.R
+		s.R = defaultSCryptParams.R
 	}
 	if s.P < 1 {
 		s.P = defaultSCryptParams.P

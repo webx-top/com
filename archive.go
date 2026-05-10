@@ -72,13 +72,25 @@ func Zip(srcDirPath string, destFilePath string, args ...*regexp.Regexp) (n int6
 	}
 
 	fi, err := f.Stat()
-	if err != nil {
+	if err == nil {
 		n = fi.Size()
 	}
 	return
 }
 
 func IllegalFilePath(fpath string) bool {
+	// Check for absolute paths (zip slip via absolute path)
+	if len(fpath) > 0 && fpath[0] == '/' {
+		return true
+	}
+	if len(fpath) > 1 && fpath[0] == '\\' {
+		return true
+	}
+	// Check for Windows absolute paths like "C:\\" or "C:/"
+	if len(fpath) > 2 && fpath[1] == ':' && (fpath[2] == '/' || fpath[2] == '\\') {
+		return true
+	}
+
 	if fpath == `..` {
 		return true
 	}
@@ -94,9 +106,15 @@ func IllegalFilePath(fpath string) bool {
 		case '.':
 			dots++
 		case '/':
-			fallthrough
-		case '\\':
-			if dots > 1 {
+				fallthrough
+			case '\\':
+				if dots > 1 {
+					return true
+				}
+				dots = 0
+			case ':':
+			// Check for Windows drive letter in the middle of path
+			if dots > 0 {
 				return true
 			}
 		default:
@@ -261,13 +279,17 @@ func tarGzDir(srcDirPath string, recPath string, tw *tar.Writer, regexpFileName,
 			// Directory
 			// (Directory won't add unitl all subfiles are added)
 			fmt.Printf("Adding path...%s\n", curPath)
-			tarGzDir(curPath, recPath+"/"+fi.Name(), tw, regexpFileName, regexpIgnoreFile)
+			if err := tarGzDir(curPath, recPath+"/"+fi.Name(), tw, regexpFileName, regexpIgnoreFile); err != nil {
+				return err
+			}
 		} else {
 			// File
 			fmt.Printf("Adding file...%s\n", curPath)
 		}
 
-		tarGzFile(curPath, recPath+"/"+fi.Name(), tw, fi)
+		if err := tarGzFile(curPath, recPath+"/"+fi.Name(), tw, fi); err != nil {
+			return err
+		}
 	}
 	return err
 }

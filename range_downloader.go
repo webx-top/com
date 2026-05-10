@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"math"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -27,11 +28,22 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 		threads = args[0]
 	}
 	defer timeTrack(time.Now(), "Full download")
-	resp, err := http.Get(url)
+	transport := &http.Transport{
+		ResponseHeaderTimeout: 30 * time.Second,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+	}
+	client := &http.Client{
+		Transport: transport,
+	}
+	resp, err := client.Get(url)
 	if err != nil {
 		return err
 	}
 	contentLength := resp.Header.Get("Content-Length")
+	resp.Body.Close()
 	if len(contentLength) < 1 {
 		return ErrNoHeaderContentLength
 	}
@@ -55,23 +67,23 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 	if err != nil {
 		return err
 	}
-	contentSize, _ := strconv.ParseInt(contentLength, 10, 64)
+	totalContentSize, _ := strconv.ParseInt(contentLength, 10, 64)
 	if resp.Header.Get("Accept-Ranges") == "bytes" {
 		var wg sync.WaitGroup
 		log.Println("Ranges Supported!")
-		log.Println("Content Size:", contentLength, `(`+FormatByte(contentSize)+`)`)
-		if contentSize <= startByte {
-			log.Println("Download Complete! Total Size:", contentSize, `(`+FormatByte(contentSize)+`)`)
+		log.Println("Content Size:", contentLength, `(`+FormatByte(totalContentSize)+`)`)
+		if totalContentSize <= startByte {
+			log.Println("Download Complete! Total Size:", totalContentSize, `(`+FormatByte(totalContentSize)+`)`)
 			return nil
 		}
-		contentSize -= startByte
-		calculatedChunksize := contentSize / int64(threads)
+		remainingSize := totalContentSize - startByte
+		calculatedChunksize := remainingSize / int64(threads)
 		log.Println("Chunk Size: ", calculatedChunksize, `(`+FormatByte(calculatedChunksize)+`)`)
 		var endByte int64
 		chunks := 0
 		completedChunks := 0
 		totalChunks := threads
-		if math.Mod(float64(contentSize), float64(threads)) > 0 {
+		if math.Mod(float64(remainingSize), float64(threads)) > 0 {
 			totalChunks++
 		}
 		lengthStr := strconv.Itoa(len(strconv.Itoa(totalChunks)))
@@ -82,19 +94,19 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 		for i := 0; i < threads; i++ {
 			wg.Add(1)
 			endByte = startByte + calculatedChunksize
-			go fetchChunk(startByte, endByte, url, outfile, &wg, completedChunkCallback)
+			go fetchChunk(startByte, endByte, url, outfile, client, &wg, completedChunkCallback)
 			startByte = endByte
 			chunks++
 		}
-		if endByte < contentSize {
+		if endByte < totalContentSize {
 			wg.Add(1)
 			startByte = endByte
-			endByte = contentSize
-			go fetchChunk(startByte, endByte, url, outfile, &wg, completedChunkCallback)
+			endByte = totalContentSize
+			go fetchChunk(startByte, endByte, url, outfile, client, &wg, completedChunkCallback)
 			chunks++
 		}
 		wg.Wait()
-		log.Println("Download Complete! Total Size:", contentSize, `(`+FormatByte(contentSize)+`)`)
+		log.Println("Download Complete! Total Size:", totalContentSize, `(`+FormatByte(totalContentSize)+`)`)
 		log.Println("Building File...")
 		defer timeTrack(time.Now(), "File Assembled")
 		//Verify file size
@@ -103,8 +115,8 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 			return err
 		}
 		actualFileSize := filestats.Size()
-		if actualFileSize != contentSize {
-			return errors.New(fmt.Sprint("Actual Size: ", actualFileSize, " Expected: ", contentSize))
+		if actualFileSize != totalContentSize {
+			return errors.New(fmt.Sprint("Actual Size: ", actualFileSize, " Expected: ", totalContentSize))
 		}
 		//Verify Md5
 		fileHash := resp.Header.Get("X-File-Hash")
@@ -123,7 +135,7 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 			barray, _ := os.ReadFile(saveTo)
 			computedHash := md5.Sum(barray)
 			computedSlice := computedHash[0:]
-			if bytes.Compare(computedSlice, contentMd5) != 0 {
+			if !bytes.Equal(computedSlice, contentMd5) {
 				return ErrMd5Unmatched
 			}
 			//log.Println("File MD5 Matches!")
@@ -133,7 +145,7 @@ func RangeDownload(url string, saveTo string, args ...int) error {
 	}
 	log.Println("Range Download unsupported")
 	log.Println("Beginning full download...")
-	err = fetchChunk(0, contentSize, url, outfile, nil, nil)
+	err = fetchChunk(0, totalContentSize, url, outfile, client, nil, nil)
 	log.Println("Download Complete")
 	return err
 }
@@ -151,11 +163,10 @@ func assembleChunk(filename string, outfile *os.File) error {
 	return os.Remove(filename)
 }
 
-func fetchChunk(startByte, endByte int64, url string, outfile *os.File, wg *sync.WaitGroup, callback func()) error {
+func fetchChunk(startByte, endByte int64, url string, outfile *os.File, client *http.Client, wg *sync.WaitGroup, callback func()) error {
 	if wg != nil {
 		defer wg.Done()
 	}
-	client := new(http.Client)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return err
