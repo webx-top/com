@@ -1,3 +1,4 @@
+//go:build gojay
 // +build gojay
 
 package json

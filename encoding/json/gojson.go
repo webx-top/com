@@ -1,3 +1,4 @@
+//go:build gojson
 // +build gojson
 
 package json
