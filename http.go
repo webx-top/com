@@ -349,24 +349,29 @@ func IsNetworkOrHostDown(err error, expectTimeouts bool) bool {
 		}
 	}
 
+	errStr := err.Error()
+
 	// Fallback to other mechanisms.
 	switch {
-	case strings.Contains(err.Error(), "Connection closed by foreign host"):
+	case strings.Contains(errStr, "invalid connection"):
+		// driver mysql
 		return true
-	case strings.Contains(err.Error(), "TLS handshake timeout"):
+	case strings.Contains(errStr, "Connection closed by foreign host"):
+		return true
+	case strings.Contains(errStr, "TLS handshake timeout"):
 		// If error is - tlsHandshakeTimeoutError.
 		return true
-	case strings.Contains(err.Error(), "i/o timeout"):
+	case strings.Contains(errStr, "i/o timeout"):
 		// If error is - tcp timeoutError.
 		return true
-	case strings.Contains(err.Error(), "connection timed out"):
+	case strings.Contains(errStr, "connection timed out"):
 		// If err is a net.Dial timeout.
 		return true
-	case strings.Contains(err.Error(), "connection refused"):
+	case strings.Contains(errStr, "connection refused"):
 		// If err is connection refused
 		return true
 
-	case strings.Contains(strings.ToLower(err.Error()), "503 service unavailable"):
+	case strings.Contains(strings.ToLower(errStr), "503 service unavailable"):
 		// Denial errors
 		return true
 	}
